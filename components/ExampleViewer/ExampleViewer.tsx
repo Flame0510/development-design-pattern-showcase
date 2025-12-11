@@ -22,6 +22,7 @@
 "use client";
 
 import type { PatternExample } from "@/lib/types";
+import { translateCategory } from "@/lib/i18n";
 import CodeBlock from "../CodeBlock/CodeBlock";
 import { Card, Button, Tag, Alert, Space } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
@@ -46,7 +47,7 @@ export default function ExampleViewer({
           {/* Example Title */}
           <div>
             <h3 className="text-2xl font-bold mb-2">{example.title}</h3>
-            <Tag color="blue">{example.category.toUpperCase()}</Tag>
+            <Tag color="blue">{translateCategory(example.category)}</Tag>
           </div>
 
           {/* Code Block */}

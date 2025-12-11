@@ -4,6 +4,7 @@
  * 
  * ROLE:
  * - Game controller UI with scoreboard, category selection, and team scoring
+ * - Aligned with Navy + Yellow + Beige design system
  * 
  * PATTERNS USED:
  * - BEM naming convention
@@ -16,363 +17,391 @@
  * - Responsive grid with auto-fit minmax pattern
  */
 
-@use 'sass:color';
-@use '@/styles' as *;
-@use '@/styles/functions' as fn;
+@use "sass:color";
+@use "@/styles" as *;
+@use "@/styles/functions" as fn;
 
 .round-controller {
-  max-width: fn.rem(1200);
-  margin: 0 auto;
-  padding: $spacing-8;
-
-  @include respond-below(md) {
-    padding: $spacing-4;
-  }
-
-  // Scoreboard section
-  &__scoreboard {
-    background: $white;
-    border-radius: $radius-lg;
-    padding: $spacing-6;
-    margin-bottom: $spacing-8;
-    box-shadow: $shadow-base;
-
-    @include respond-below(md) {
-      padding: $spacing-4;
-      margin-bottom: $spacing-6;
-    }
-  }
-
-  &__scoreboard-title {
-    margin: 0 0 $spacing-4 0;
-    text-align: center;
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__team-scores {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(fn.rem(200), 1fr));
-    gap: $spacing-4;
-
-    @include respond-below(md) {
-      grid-template-columns: 1fr;
-      gap: $spacing-3;
-    }
-  }
-
-  &__team-score {
-    display: flex;
-    align-items: center;
-    gap: $spacing-3;
-    padding: $spacing-4;
-    background: $gray-50;
-    border-radius: $radius-base;
-    transition: all 0.2s;
-
-    &:hover {
-      background: $gray-100;
-      transform: translateY(fn.rem(-2));
-    }
-  }
-
-  &__team-rank {
-    color: $yellow-primary;
-    min-width: fn.rem(35);
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__team-score-info {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    flex: 1;
-  }
-
-  &__team-color {
-    width: fn.rem(16);
-    height: fn.rem(16);
-    border-radius: 50%;
-    border: fn.rem(2) solid rgba($white, 0.3);
-  }
-
-  &__team-name {
-    font-weight: $weight-semibold;
-    color: $gray-900;
-  }
-
-  &__team-points {
-    color: $yellow-primary;
-    // Typography handled by Ant Design Typography in TSX
-    white-space: nowrap;
-  }
-
-  // Header section
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-8;
-    padding-bottom: $spacing-4;
-    border-bottom: fn.rem(2) solid $gray-200;
-
-    @include respond-below(md) {
-      flex-direction: column;
-      gap: $spacing-4;
-    }
-  }
-
-  &__round-title {
-    margin: 0;
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__viewer-button {
-    padding: $spacing-3 $spacing-6;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: $white;
-    border: none;
-    border-radius: $radius-base;
-    font-weight: $weight-semibold;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 fn.rem(4) fn.rem(12) rgba(#667eea, 0.3);
-
-    &:hover {
-      transform: translateY(fn.rem(-2));
-      box-shadow: 0 fn.rem(6) fn.rem(16) rgba(#667eea, 0.4);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-
-  // Category selection
-  &__category-selection {
-    background: $white;
-    border-radius: $radius-lg;
-    padding: $spacing-8;
-    box-shadow: $shadow-base;
-
-    @include respond-below(md) {
-      padding: $spacing-6;
-    }
-  }
-
-  &__selection-title {
-    color: $gray-900;
-    margin-bottom: $spacing-6;
-    text-align: center;
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__category-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(fn.rem(200), 1fr));
-    gap: $spacing-4;
-    margin-bottom: $spacing-8;
-
-    @include respond-below(md) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  &__category-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $spacing-2;
-    padding: $spacing-6;
-    font-weight: $weight-semibold;
-    color: $gray-900;
-    background-color: $gray-50;
-    border: fn.rem(2) solid $gray-200;
-    border-radius: $radius-lg;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: $blue-50;
-      border-color: $yellow-primary;
-      transform: translateY(fn.rem(-2));
-    }
-
-    &--selected {
-      background-color: $blue-50;
-      border-color: $yellow-primary;
-      color: $yellow-primary;
-    }
-
-    &--all {
-      grid-column: 1 / -1;
-    }
-  }
-
-  &__category-icon {
-    font-size: fn.rem(32);
-  }
-
-  // Pattern count selection
-  &__pattern-count-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-4;
-    margin-bottom: $spacing-8;
-
-    @include respond-below(md) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  &__pattern-count-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $spacing-2;
-    padding: $spacing-6;
-    font-weight: $weight-semibold;
-    color: $gray-900;
-    background-color: $gray-50;
-    border: fn.rem(2) solid $gray-200;
-    border-radius: $radius-lg;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: $green-50;
-      border-color: $success;
-      transform: translateY(fn.rem(-2));
-    }
-
-    &--selected {
-      background-color: $green-50;
-      border-color: $success;
-      color: $success;
-
-      .round-controller__pattern-count-label {
-        color: $success;
-      }
-    }
-  }
-
-  &__pattern-count-number {
-    font-weight: $weight-bold;
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__pattern-count-label {
-    // Typography handled by Ant Design Typography in TSX
-    color: $gray-600;
-  }
-
-  &__show-example-button {
-    display: block;
+    min-height: 100vh;
+    background-color: $navy-dark;
+    max-width: fn.rem(1200);
     margin: 0 auto;
-    padding: $spacing-4 $spacing-12;
-    font-weight: $weight-semibold;
-    color: $white;
-    background-color: $success;
-    border: none;
-    border-radius: $radius-base;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    // Typography handled by Ant Design Typography in TSX
-
-    &:hover {
-      background-color: color.adjust($success, $lightness: -10%);
-    }
-
-    &:disabled {
-      background-color: $gray-400;
-      cursor: not-allowed;
-    }
-  }
-
-  // Award points section
-  &__award-points {
-    background: $white;
-    border-radius: $radius-lg;
     padding: $spacing-8;
-    margin-top: $spacing-8;
-    box-shadow: $shadow-base;
 
     @include respond-below(md) {
-      padding: $spacing-6;
+        padding: $spacing-4;
     }
-  }
 
-  &__award-title {
-    margin: 0 0 $spacing-6 0;
-    text-align: center;
-    // Typography handled by Ant Design Typography in TSX
-  }
+    // Scoreboard section
+    &__scoreboard {
+        background-color: $beige-card;
+        border-radius: $radius-lg;
+        padding: $spacing-6;
+        margin-bottom: $spacing-8;
+        border: fn.rem(2) solid $navy-light;
 
-  &__award-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(fn.rem(180), 1fr));
-    gap: $spacing-4;
+        @include respond-below(md) {
+            padding: $spacing-4;
+            margin-bottom: $spacing-6;
+        }
 
-    @include respond-below(md) {
-      grid-template-columns: 1fr;
+        &-header {
+            display: flex;
+            align-items: center;
+            gap: $spacing-2;
+            margin-bottom: $spacing-6;
+        }
+
+        &-icon {
+            font-size: fn.rem(24);
+            color: $yellow-primary;
+        }
+
+        &-title {
+            margin: 0;
+            color: $navy-dark !important;
+            font-size: fn.rem(24) !important;
+            font-weight: $weight-bold !important;
+        }
     }
-  }
 
-  &__award-button {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    padding: $spacing-4 $spacing-5;
-    background: $white;
-    border: fn.rem(3) solid;
-    border-radius: $radius-base;
-    font-weight: $weight-semibold;
-    cursor: pointer;
-    transition: all 0.2s;
+    &__team-scores {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(fn.rem(200), 1fr));
+        gap: $spacing-4;
 
-    &:hover {
-      transform: translateY(fn.rem(-2));
-      box-shadow: $shadow-lg;
+        @include respond-below(md) {
+            grid-template-columns: 1fr;
+            gap: $spacing-3;
+        }
     }
-  }
 
-  &__award-button-color {
-    width: fn.rem(18);
-    height: fn.rem(18);
-    border-radius: 50%;
-    border: fn.rem(2) solid rgba($white, 0.3);
-  }
+    &__team-score {
+        display: flex;
+        align-items: center;
+        gap: $spacing-3;
+        padding: $spacing-4;
+        background-color: $white;
+        border-radius: $radius-base;
+        border: fn.rem(2) solid $navy-light;
+        transition: all 0.2s;
 
-  &__award-button-score {
-    color: $gray-600;
-    margin-left: auto;
-    // Typography handled by Ant Design Typography in TSX
-  }
-
-  &__skip-button {
-    grid-column: 1 / -1;
-    padding: $spacing-4 $spacing-8;
-    background: $gray-600;
-    color: $white;
-    border: none;
-    border-radius: $radius-base;
-    font-weight: $weight-semibold;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background: color.adjust($gray-600, $lightness: -10%);
+        &:hover {
+            border-color: $pink-accent;
+            transform: translateY(fn.rem(-2));
+        }
     }
-  }
 
-  // Stats section
-  &__stats {
-    margin-top: $spacing-8;
-    text-align: center;
-    color: $gray-600;
-    // Typography handled by Ant Design Typography in TSX
-
-    p {
-      margin: $spacing-1 0;
+    &__team-rank {
+        color: $yellow-primary;
+        min-width: fn.rem(35);
+        font-weight: $weight-bold;
     }
-  }
+
+    &__team-score-info {
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+        flex: 1;
+    }
+
+    &__team-color {
+        width: fn.rem(16);
+        height: fn.rem(16);
+        border-radius: 50%;
+        border: fn.rem(2) solid $navy-light;
+    }
+
+    &__team-name {
+        font-weight: $weight-semibold;
+        color: $navy-dark;
+    }
+
+    &__team-points {
+        color: $yellow-primary;
+        font-weight: $weight-bold;
+        white-space: nowrap;
+    }
+
+    // Header section
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-8;
+        padding-bottom: $spacing-4;
+        border-bottom: fn.rem(2) solid $yellow-primary;
+
+        @include respond-below(md) {
+            flex-direction: column;
+            gap: $spacing-4;
+        }
+    }
+
+    &__round-title {
+        margin: 0;
+        color: $yellow-primary !important;
+    }
+
+    &__viewer-button {
+        padding: $spacing-3 $spacing-6;
+        background-color: $pink-accent !important;
+        color: $white !important;
+        border: none;
+        border-radius: $radius-base;
+        font-weight: $weight-semibold;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+            background-color: $pink-dark !important;
+            transform: translateY(fn.rem(-2));
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    // Category selection
+    &__category-selection {
+        background-color: $beige-card;
+        border-radius: $radius-lg;
+        padding: $spacing-8;
+        border: fn.rem(2) solid $navy-light;
+
+        @include respond-below(md) {
+            padding: $spacing-6;
+        }
+    }
+
+    &__selection-content {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-8;
+    }
+
+    &__selection-title {
+        color: $navy-dark !important;
+        margin-bottom: $spacing-4;
+        font-size: fn.rem(20) !important;
+        font-weight: $weight-semibold !important;
+    }
+
+    &__category-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(fn.rem(200), 1fr));
+        gap: $spacing-4;
+
+        @include respond-below(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__category-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-2;
+        padding: $spacing-6;
+        font-weight: $weight-semibold;
+        font-size: fn.rem(16);
+        color: $navy-dark;
+        background-color: $white;
+        border: fn.rem(2) solid $navy-light;
+        border-radius: $radius-lg;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background-color: $beige-light;
+            border-color: $pink-accent;
+            transform: translateY(fn.rem(-2));
+        }
+
+        &--selected {
+            background-color: $yellow-primary;
+            border-color: $yellow-dark;
+            color: $navy-dark;
+        }
+
+        &--all {
+            grid-column: 1 / -1;
+        }
+    }
+
+    &__category-icon {
+        font-size: fn.rem(24);
+        color: $yellow-primary;
+    }
+
+    // Pattern count selection
+    &__pattern-count-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: $spacing-4;
+        margin-bottom: $spacing-8;
+
+        @include respond-below(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__pattern-count-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-2;
+        padding: $spacing-6;
+        font-weight: $weight-semibold;
+        color: $navy-dark;
+        background-color: $white;
+        border: fn.rem(2) solid $navy-light;
+        border-radius: $radius-lg;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background-color: $green-50;
+            border-color: $success;
+            color: $success;
+            transform: translateY(fn.rem(-2));
+
+            .round-controller__pattern-count-number,
+            .round-controller__pattern-count-label {
+                color: $success;
+            }
+        }
+
+        &--selected {
+            background-color: $success;
+            border-color: $success-dark;
+            color: $white;
+
+            .round-controller__pattern-count-label {
+                color: $white;
+            }
+        }
+    }
+
+    &__pattern-count-number {
+        font-weight: $weight-bold;
+        font-size: fn.rem(48);
+        color: inherit;
+        margin-bottom: fn.rem(4);
+    }
+
+    &__pattern-count-label {
+        color: $gray-600;
+        font-size: $font-sm;
+    }
+
+    &__show-example-button {
+        display: block;
+        margin: 0 auto;
+        padding: $spacing-4 $spacing-12;
+        font-weight: $weight-semibold;
+        color: $navy-dark !important;
+        background-color: $yellow-primary !important;
+        border: none;
+        border-radius: $radius-base;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: $yellow-dark !important;
+        }
+
+        &:disabled {
+            background-color: $gray-400 !important;
+            cursor: not-allowed;
+        }
+    }
+
+    // Award points section
+    &__award-points {
+        background-color: $beige-card;
+        border-radius: $radius-lg;
+        padding: $spacing-8;
+        margin-top: $spacing-8;
+        border: fn.rem(2) solid $navy-light;
+
+        @include respond-below(md) {
+            padding: $spacing-6;
+        }
+    }
+
+    &__award-title {
+        margin: 0 0 $spacing-6 0;
+        text-align: center;
+        color: $navy-dark !important;
+    }
+
+    &__award-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(fn.rem(180), 1fr));
+        gap: $spacing-4;
+
+        @include respond-below(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__award-button {
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+        padding: $spacing-4 $spacing-5;
+        background-color: $white;
+        border: fn.rem(3) solid;
+        border-radius: $radius-base;
+        font-weight: $weight-semibold;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: $navy-dark;
+
+        &:hover {
+            transform: translateY(fn.rem(-2));
+            background-color: $beige-light;
+        }
+    }
+
+    &__award-button-color {
+        width: fn.rem(18);
+        height: fn.rem(18);
+        border-radius: 50%;
+        border: fn.rem(2) solid $navy-light;
+    }
+
+    &__award-button-score {
+        color: $gray-600;
+        margin-left: auto;
+    }
+
+    &__skip-button {
+        grid-column: 1 / -1;
+        padding: $spacing-4 $spacing-8;
+        background-color: $gray-600 !important;
+        color: $white !important;
+        border: none;
+        border-radius: $radius-base;
+        font-weight: $weight-semibold;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background-color: $gray-700 !important;
+        }
+    }
+
+    // Stats section
+    &__stats {
+        margin-top: $spacing-8;
+        text-align: center;
+        color: $white;
+
+        p {
+            margin: $spacing-1 0;
+        }
+    }
 }

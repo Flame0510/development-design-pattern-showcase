@@ -24,6 +24,17 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { hydrate } from '@/lib/store/gameSlice';
+import { 
+  RocketOutlined, 
+  CodeOutlined, 
+  BulbOutlined, 
+  TrophyOutlined, 
+  BarChartOutlined, 
+  HistoryOutlined, 
+  AimOutlined,
+  ClockCircleOutlined,
+  PauseCircleOutlined 
+} from '@ant-design/icons';
 import './page.scss';
 
 export default function MatchViewer() {
@@ -107,12 +118,12 @@ export default function MatchViewer() {
     <div className="match-viewer">
       {/* Header */}
       <div className="match-viewer__header">
-        <h1 className="match-viewer__title">🎮 Match Viewer</h1>
+        <h1 className="match-viewer__title"><RocketOutlined /> Match Viewer</h1>
         <div className="match-viewer__round-info">
           <div className="match-viewer__round-number">Round {roundNumber}</div>
           {roundStartTime && (
             <div className={isPaused ? 'match-viewer__timer match-viewer__timer--paused' : 'match-viewer__timer'}>
-              {isPaused ? '⏸️' : '⏱️'} {formatTime(elapsedTime)}
+              {isPaused ? <PauseCircleOutlined /> : <ClockCircleOutlined />} {formatTime(elapsedTime)}
             </div>
           )}
         </div>
@@ -124,7 +135,7 @@ export default function MatchViewer() {
           <div className="match-viewer__main-content">
             {/* Codice Esempio */}
             <div className="match-viewer__card">
-              <h2 className="match-viewer__card-title">📝 Codice Esempio</h2>
+              <h2 className="match-viewer__card-title"><CodeOutlined /> Codice Esempio</h2>
               <div className="match-viewer__example-title">{currentExample.title}</div>
               <span className={`match-viewer__category-badge match-viewer__category-badge--${currentExample.category}`}>
                 {currentExample.category}
@@ -137,7 +148,7 @@ export default function MatchViewer() {
             {/* Soluzione - Sempre visibile nel Match Viewer */}
             <div className="match-viewer__card">
               <div className="match-viewer__solution-section">
-                <h3 className="match-viewer__solution-title">💡 Soluzione</h3>
+                <h3 className="match-viewer__solution-title"><BulbOutlined /> Soluzione</h3>
                 <div className="match-viewer__pattern-list">
                   {currentExample.solutionPatterns.map((pattern, index) => (
                     <span key={index} className="match-viewer__pattern-tag">
@@ -156,7 +167,7 @@ export default function MatchViewer() {
           <div className="match-viewer__sidebar">
             {/* Classifica */}
             <div className="match-viewer__card">
-              <h2 className="match-viewer__card-title">🏆 Classifica</h2>
+              <h2 className="match-viewer__card-title"><TrophyOutlined /> Classifica</h2>
               <div className="match-viewer__scoreboard">
                 {sortedTeams.map((team, index) => (
                   <div key={team.id} className="match-viewer__team-score">
@@ -176,7 +187,7 @@ export default function MatchViewer() {
 
             {/* Statistiche */}
             <div className="match-viewer__card">
-              <h2 className="match-viewer__card-title">📊 Statistiche</h2>
+              <h2 className="match-viewer__card-title"><BarChartOutlined /> Statistiche</h2>
               <div className="match-viewer__stats">
                 <div className="match-viewer__stat-item">
                   <div className="match-viewer__stat-value">{answerHistory.length}</div>
@@ -200,14 +211,14 @@ export default function MatchViewer() {
         </div>
       ) : (
         <div className="match-viewer__no-data">
-          <div className="match-viewer__no-data-icon">🎯</div>
+          <div className="match-viewer__no-data-icon"><AimOutlined /></div>
           <p>In attesa del prossimo esempio...</p>
         </div>
       )}
 
       {/* Storico */}
       <div className="match-viewer__card">
-        <h2 className="match-viewer__card-title">📜 Storico Risposte</h2>
+        <h2 className="match-viewer__card-title"><HistoryOutlined /> Storico Risposte</h2>
         {answerHistory.length > 0 ? (
           <div className="match-viewer__history-list">
             {[...answerHistory].reverse().map((item, index) => (

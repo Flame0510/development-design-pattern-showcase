@@ -25,7 +25,7 @@
 
 import { useState } from "react";
 import type { Team } from "@/lib/types";
-import { Card, Form, Input, Button, List, Space, Typography, Badge } from "antd";
+import { Card, Form, Input, Button, Space, Typography, Badge } from "antd";
 import { PlusOutlined, DeleteOutlined, RocketOutlined } from "@ant-design/icons";
 import './TeamSetup.scss';
 
@@ -97,36 +97,30 @@ export default function TeamSetup({ onStart }: TeamSetupProps) {
         <Space orientation="vertical" size="large" className="w-full">
           {/* Teams List */}
           {teams.length > 0 && (
-            <List
-              className="team-setup__list"
-              dataSource={teams}
-              renderItem={(team) => (
-                <List.Item
-                  actions={[
-                    <Button
-                      key="delete"
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => handleRemoveTeam(team.id)}
-                    >
-                      Rimuovi
-                    </Button>
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={
-                      <div
-                        className="team-setup__team-avatar"
-                        style={{ backgroundColor: team.color }}
-                      />
-                    }
-                    title={<Text strong className="team-setup__team-name">{team.name}</Text>}
-                    description={<span className="team-setup__team-color">Colore: {team.color}</span>}
-                  />
-                </List.Item>
-              )}
-            />
+            <div className="team-setup__list">
+              {teams.map((team) => (
+                <div key={team.id} className="team-setup__list-item">
+                  <div className="team-setup__list-item-content">
+                    <div
+                      className="team-setup__team-avatar"
+                      style={{ backgroundColor: team.color }}
+                    />
+                    <div className="team-setup__list-item-info">
+                      <Text strong className="team-setup__team-name">{team.name}</Text>
+                      <span className="team-setup__team-color">Colore: {team.color}</span>
+                    </div>
+                  </div>
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleRemoveTeam(team.id)}
+                  >
+                    Rimuovi
+                  </Button>
+                </div>
+              ))}
+            </div>
           )}
 
           {/* Add Team Form */}

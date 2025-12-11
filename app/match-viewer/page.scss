@@ -3,61 +3,93 @@
  * SECTION: Game Logic
  * 
  * ROLE:
- * - Second-screen live game viewer with glassmorphism design
+ * - Second-screen live game viewer
+ * - Aligned with Navy + Yellow + Beige design system
  */
 
 @use '@/styles' as *;
+@use '@/styles/functions' as fn;
 
 .match-viewer {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background-color: $navy-dark;
   color: $white;
   padding: $spacing-8;
   font-family: $font-primary;
 
+  @include respond-below(md) {
+    padding: $spacing-4;
+  }
+
   // Header
   &__header {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    background-color: $navy-medium;
     border-radius: $radius-xl;
     padding: $spacing-6 $spacing-8;
     margin-bottom: $spacing-8;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: fn.rem(2) solid $yellow-primary;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @include respond-below(md) {
+      flex-direction: column;
+      gap: $spacing-4;
+      padding: $spacing-4;
+    }
   }
 
   &__title {
     @include responsive-heading-1;
     margin: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $yellow-primary !important;
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    .anticon {
+      font-size: fn.rem(36);
+    }
   }
 
   &__round-info {
     display: flex;
     gap: $spacing-8;
     align-items: center;
+
+    @include respond-below(md) {
+      gap: $spacing-4;
+    }
   }
 
   &__round-number {
     @include responsive-heading-3;
     padding: $spacing-2 $spacing-6;
-    background: rgba(102, 126, 234, 0.2);
-    border-radius: 2rem;
-    border: 2px solid #667eea;
+    background-color: $yellow-primary;
+    color: $navy-dark;
+    border-radius: fn.rem(24);
+    font-weight: $weight-bold;
   }
 
   &__timer {
-    font-size: 2rem;
+    font-size: fn.rem(32);
     font-weight: $weight-bold;
     font-family: $font-mono;
     color: $success;
-    min-width: 120px;
+    min-width: fn.rem(120);
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-2;
+
+    @include respond-below(md) {
+      font-size: fn.rem(24);
+    }
+
+    .anticon {
+      font-size: fn.rem(28);
+    }
 
     &--paused {
       color: $yellow-primary;
@@ -67,11 +99,11 @@
   // Grid layout
   &__grid-layout {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr fn.rem(400);
     gap: $spacing-8;
     margin-bottom: $spacing-8;
 
-    @include respond-above(lg) {
+    @include respond-below(lg) {
       grid-template-columns: 1fr;
     }
   }
@@ -90,33 +122,40 @@
 
   // Card component
   &__card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    background-color: $beige-card;
     border-radius: $radius-xl;
     padding: $spacing-6;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: fn.rem(2) solid $navy-light;
   }
 
   &__card-title {
     @include responsive-heading-3;
     margin: 0 0 $spacing-4 0;
-    color: #a78bfa;
+    color: $navy-dark !important;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .anticon {
+      font-size: fn.rem(20);
+      color: $yellow-primary;
+    }
   }
 
   // Code block
   &__code-block {
-    background: #0d1117;
+    background-color: $navy-dark;
     border-radius: $radius-base;
     padding: $spacing-6;
     overflow-x: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: fn.rem(2) solid $navy-light;
 
     pre {
       margin: 0;
       font-family: $font-mono;
       font-size: $font-sm;
       line-height: 1.6;
-      color: #c9d1d9;
+      color: $white;
       white-space: pre-wrap;
       word-break: break-word;
     }
@@ -126,32 +165,39 @@
   &__example-title {
     @include responsive-heading-3;
     margin-bottom: $spacing-4;
+    color: $navy-dark !important;
   }
 
   &__category-badge {
     display: inline-block;
     padding: $spacing-1 $spacing-3;
-    border-radius: 1rem;
+    border-radius: fn.rem(16);
     font-size: $font-sm;
     font-weight: $weight-semibold;
     margin-bottom: $spacing-4;
 
     &--creational {
-      background: rgba(34, 197, 94, 0.2);
-      color: #4ade80;
-      border: 1px solid #4ade80;
+      background-color: $success-light;
+      color: $navy-dark;
+      border: fn.rem(2) solid $success;
     }
 
     &--structural {
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-      border: 1px solid #60a5fa;
+      background-color: #60a5fa;
+      color: $white;
+      border: fn.rem(2) solid #2563eb;
     }
 
     &--behavioral {
-      background: rgba(168, 85, 247, 0.2);
-      color: #c084fc;
-      border: 1px solid #c084fc;
+      background-color: #c084fc;
+      color: $white;
+      border: fn.rem(2) solid #9333ea;
+    }
+
+    &--multipattern {
+      background-color: $yellow-primary;
+      color: $navy-dark;
+      border: fn.rem(2) solid $yellow-dark;
     }
   }
 
@@ -159,13 +205,21 @@
   &__solution-section {
     margin-top: $spacing-6;
     padding-top: $spacing-6;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: fn.rem(2) solid $navy-light;
   }
 
   &__solution-title {
     @include responsive-heading-3;
     margin-bottom: $spacing-3;
-    color: $yellow-primary;
+    color: $pink-accent !important;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .anticon {
+      font-size: fn.rem(20);
+      color: $pink-accent;
+    }
   }
 
   &__pattern-list {
@@ -177,16 +231,16 @@
 
   &__pattern-tag {
     padding: $spacing-2 $spacing-4;
-    background: rgba(251, 191, 36, 0.2);
-    border: 1px solid $yellow-primary;
+    background-color: $yellow-primary;
+    border: fn.rem(2) solid $yellow-dark;
     border-radius: $radius-base;
     font-weight: $weight-semibold;
-    color: $yellow-primary;
+    color: $navy-dark;
   }
 
   &__explanation {
     line-height: 1.8;
-    color: $gray-300;
+    color: $navy-dark;
   }
 
   // Scoreboard
@@ -201,16 +255,21 @@
     align-items: center;
     gap: $spacing-4;
     padding: $spacing-4;
-    background: rgba(255, 255, 255, 0.03);
+    background-color: $white;
     border-radius: $radius-base;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: fn.rem(2) solid $navy-light;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: $pink-accent;
+    }
   }
 
   &__team-rank {
-    font-size: 1.5rem;
+    font-size: fn.rem(24);
     font-weight: $weight-bold;
-    color: #a78bfa;
-    min-width: 50px;
+    color: $yellow-primary;
+    min-width: fn.rem(50);
     text-align: center;
   }
 
@@ -222,18 +281,19 @@
   }
 
   &__team-color {
-    width: 24px;
-    height: 24px;
+    width: fn.rem(24);
+    height: fn.rem(24);
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: fn.rem(2) solid $navy-light;
   }
 
   &__team-name {
     @include responsive-heading-3;
+    color: $navy-dark !important;
   }
 
   &__team-points {
-    font-size: 1.5rem;
+    font-size: fn.rem(24);
     font-weight: $weight-bold;
     color: $success;
   }
@@ -243,16 +303,16 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-3;
-    max-height: 500px;
+    max-height: fn.rem(500);
     overflow-y: auto;
     @include custom-scrollbar;
   }
 
   &__history-item {
     padding: $spacing-4;
-    background: rgba(255, 255, 255, 0.03);
+    background-color: $white;
     border-radius: $radius-base;
-    border-left: 3px solid;
+    border-left: fn.rem(4) solid $pink-accent;
   }
 
   &__history-header {
@@ -264,17 +324,18 @@
 
   &__history-round {
     font-weight: $weight-semibold;
-    color: #a78bfa;
+    color: $navy-dark;
   }
 
   &__history-time {
     font-size: $font-sm;
-    color: $gray-400;
+    color: $gray-600;
   }
 
   &__history-title {
     font-size: $font-base;
     margin-bottom: $spacing-2;
+    color: $navy-dark;
   }
 
   &__history-winner {
@@ -282,11 +343,12 @@
     align-items: center;
     gap: $spacing-2;
     font-size: $font-sm;
+    color: $navy-dark;
   }
 
   &__winner-color {
-    width: 16px;
-    height: 16px;
+    width: fn.rem(16);
+    height: fn.rem(16);
     border-radius: 50%;
   }
 
@@ -294,14 +356,18 @@
   &__no-data {
     text-align: center;
     padding: $spacing-12;
-    color: $gray-400;
+    color: $white;
     @include responsive-heading-3;
   }
 
   &__no-data-icon {
-    font-size: 3rem;
     margin-bottom: $spacing-4;
     opacity: 0.5;
+
+    .anticon {
+      font-size: fn.rem(64);
+      color: $yellow-primary;
+    }
   }
 
   // Stats
@@ -313,13 +379,13 @@
 
   &__stat-item {
     padding: $spacing-4;
-    background: rgba(255, 255, 255, 0.03);
+    background-color: $white;
     border-radius: $radius-base;
     text-align: center;
   }
 
   &__stat-value {
-    font-size: 2rem;
+    font-size: fn.rem(32);
     font-weight: $weight-bold;
     color: $success;
     margin-bottom: $spacing-1;
@@ -327,6 +393,6 @@
 
   &__stat-label {
     font-size: $font-sm;
-    color: $gray-400;
+    color: $gray-600;
   }
 }

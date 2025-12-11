@@ -4,8 +4,7 @@
  * 
  * ROLE:
  * - Team configuration interface before game starts
- * - Add/remove teams with color assignment
- * - Form validation and start button
+ * - Aligned with Navy + Yellow + Beige design system
  * 
  * PATTERNS USED:
  * - BEM naming convention
@@ -22,6 +21,8 @@
 @use '@/styles/functions' as fn;
 
 .team-setup {
+  min-height: 100vh;
+  background-color: $navy-dark;
   max-width: fn.rem(700);
   margin: 0 auto;
   padding: $spacing-8;
@@ -39,28 +40,77 @@
     }
 
     &-title {
-      color: $navy-dark;
-      // Typography handled by Ant Design Typography in TSX
+      color: $yellow-primary !important;
+      font-size: fn.rem(42) !important;
+      font-weight: 700 !important;
+      margin-bottom: fn.rem(16) !important;
+
+      @include respond-below(md) {
+        font-size: fn.rem(32) !important;
+      }
     }
 
     &-subtitle {
-      color: $gray-600;
-      // Typography handled by Ant Design Typography in TSX
+      color: $white !important;
+      font-size: fn.rem(18) !important;
+
+      @include respond-below(md) {
+        font-size: fn.rem(16) !important;
+      }
     }
   }
 
   &__card {
     margin-bottom: $spacing-6;
+    background-color: $beige-card;
+    border: fn.rem(2) solid $navy-light;
+
+    :global(.ant-card-head) {
+      background-color: transparent;
+      border-bottom: fn.rem(2) solid $navy-light;
+    }
   }
 
   &__card-title {
     display: flex;
     align-items: center;
     gap: $spacing-2;
+    color: $navy-dark !important;
   }
 
   &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
     margin-bottom: $spacing-4;
+
+    &-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: $spacing-4;
+      background-color: $white;
+      border-radius: $radius-base;
+      border: fn.rem(2) solid $navy-light;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $pink-accent;
+      }
+
+      &-content {
+        display: flex;
+        align-items: center;
+        gap: $spacing-3;
+        flex: 1;
+      }
+
+      &-info {
+        display: flex;
+        flex-direction: column;
+        gap: fn.rem(4);
+      }
+    }
   }
 
   &__team {
@@ -68,15 +118,18 @@
       width: fn.rem(40);
       height: fn.rem(40);
       border-radius: 50%;
+      border: fn.rem(2) solid $navy-light;
+      flex-shrink: 0;
     }
 
     &-name {
       font-weight: $weight-semibold;
+      color: $navy-dark;
     }
 
     &-color {
       color: $gray-600;
-      // Typography handled by Ant Design Typography in TSX
+      font-size: $font-sm;
     }
   }
 
@@ -89,19 +142,27 @@
   }
 
   &__warning {
-    color: $warning;
-    // Typography handled by Ant Design Typography in TSX
+    color: $yellow-primary;
   }
 
   &__start-button {
-    // Typography handled by Ant Design Typography in TSX
     padding: $spacing-6;
     height: auto;
+    background-color: $yellow-primary !important;
+    border-color: $yellow-primary !important;
+    color: $navy-dark !important;
+    font-weight: $weight-bold !important;
+
+    &:hover {
+      background-color: $yellow-dark !important;
+      border-color: $yellow-dark !important;
+    }
   }
 
   &__empty-state {
     text-align: center;
-    background-color: $gray-50;
+    background-color: $white;
     padding: $spacing-6;
+    border-radius: $radius-base;
   }
 }
