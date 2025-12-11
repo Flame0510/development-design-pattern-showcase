@@ -1,0 +1,71 @@
+/**
+ * COLOR PALETTE - Design Pattern Showcase
+ * Based on course slides: Navy + Yellow + Pink/Red
+ * 
+ * USAGE:
+ * - Import in component SCSS: @use '@/styles/colors' as colors;
+ * - Use variable: background-color: colors.$navy-dark;
+ * - Or use Tailwind classes: bg-navy text-yellow
+ */
+
+// === PRIMARY COLORS (from slides) ===
+$navy-dark: #0a1929;        // Background principale
+$navy-medium: #1a2942;      // Background secondario (card, collapse)
+$navy-light: #2d3f5f;       // Navy più chiaro per hover
+
+$yellow-primary: #ffc107;   // Giallo acceso (titoli, icone, CTA)
+$yellow-dark: #f9a825;      // Giallo scuro per hover
+$yellow-light: #ffd54f;     // Giallo chiaro per highlights
+
+$pink-accent: #ff4d6d;      // Rosa/rosso accent (hover, errori)
+$pink-dark: #e63946;        // Rosa scuro per active state
+$pink-light: #ff758f;       // Rosa chiaro per hover soft
+
+$beige-card: #faf5ed;       // Beige chiaro per card pattern (più vicino al bianco)
+$beige-dark: #f5e6d3;       // Beige medio per bordi/separatori
+$beige-light: #fffbf5;      // Beige molto chiaro per background alternativo
+
+// === NEUTRAL COLORS ===
+$white: #ffffff;
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+$black: #000000;
+
+// === SEMANTIC COLORS ===
+$success: #10b981;          // Verde per successo
+$success-dark: #059669;
+$success-light: #34d399;
+$green-50: #ecfdf5;         // Verde molto chiaro per background
+
+$error: $pink-accent;       // Usa pink-accent per errori
+$error-dark: $pink-dark;
+$error-light: $pink-light;
+
+$warning: $yellow-primary;  // Usa yellow per warning
+$warning-dark: $yellow-dark;
+$warning-light: $yellow-light;
+
+$info: #3b82f6;            // Blu per informazioni
+$info-dark: #2563eb;
+$info-light: #60a5fa;
+$blue-50: #eff6ff;         // Blu molto chiaro per background
+
+// === CODE SYNTAX HIGHLIGHTING ===
+$code-bg: #0d1117;         // GitHub dark background
+$code-keyword: #ff79c6;    // Dracula pink (keywords)
+$code-string: #50fa7b;     // Dracula green (strings)
+$code-comment: #6272a4;    // Dracula comment blue
+$code-function: #8be9fd;   // Dracula cyan (functions)
+$code-number: #bd93f9;     // Dracula purple (numbers)
+$code-operator: #ff79c6;   // Dracula pink (operators)
+$code-punctuation: #f8f8f2; // Dracula foreground
+$code-class: #f1fa8c;      // Dracula yellow (classes)
+

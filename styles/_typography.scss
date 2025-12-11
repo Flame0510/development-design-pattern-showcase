@@ -1,0 +1,151 @@
+/**
+ * TYPOGRAPHY - Design Pattern Showcase
+ * 
+ * ⚠️ CRITICAL: Use Ant Design Typography components only!
+ * 
+ * PATTERN: Facade Pattern (simplified interface to Ant Design Typography)
+ * PURPOSE:
+ * - Centralize typography standards
+ * - Document Ant Design Typography usage
+ * - Prevent manual font-size declarations
+ *
+ * CORRECT USAGE (in TSX):
+ * import { Typography } from 'antd';
+ * const { Title, Text, Paragraph } = Typography;
+ * 
+ * <Title level={1}>Main Heading</Title>          // H1, largest
+ * <Title level={2}>Section Heading</Title>       // H2
+ * <Title level={3}>Subsection</Title>            // H3
+ * <Title level={4}>Card Title</Title>            // H4
+ * <Title level={5}>Small Heading</Title>         // H5
+ * 
+ * <Text>Regular text content</Text>
+ * <Text strong>Bold text</Text>
+ * <Text type="secondary">Muted text</Text>
+ * <Text type="warning">Warning text</Text>
+ * <Text type="danger">Error text</Text>
+ * <Text code>Inline code</Text>
+ * 
+ * <Paragraph>Long form content...</Paragraph>
+ * <Paragraph ellipsis>Truncated text...</Paragraph>
+ * <Paragraph copyable>Copy to clipboard</Paragraph>
+ *
+ * WRONG USAGE (❌ NEVER DO THIS):
+ * <h1 style={{ fontSize: '48px' }}>Title</h1>    // ❌ Manual sizing
+ * <p className="text-2xl">Content</p>            // ❌ Tailwind typography
+ * <div style={{ fontSize: rem(24) }}>Text</div>  // ❌ Custom sizing
+ *
+ * RESPONSIVE SIZING:
+ * Ant Design automatically handles responsive typography through theme tokens.
+ * Configure in lib/antdTheme.ts:
+ * 
+ * token: {
+ *   fontSize: 16,              // Base font size
+ *   fontSizeHeading1: 38,      // H1 size
+ *   fontSizeHeading2: 30,      // H2 size
+ *   fontSizeHeading3: 24,      // H3 size
+ *   fontSizeHeading4: 20,      // H4 size
+ *   fontSizeHeading5: 16,      // H5 size
+ * }
+ *
+ * FONT FAMILIES:
+ * Configure in lib/antdTheme.ts:
+ * 
+ * token: {
+ *   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+ *   fontFamilyCode: '"Courier New", Courier, "SF Mono", monospace',
+ * }
+ *
+ * SCSS USAGE (only for non-component contexts):
+ * Use rem() function from _functions.scss for rare cases where
+ * you cannot use Ant Design components (e.g., pseudo-elements)
+ */
+
+@use './functions' as fn;
+
+// === FONT FAMILIES (mirror Ant Design theme) ===
+$font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+
+$font-mono: 'Courier New', Courier, 'SF Mono', Monaco, 'Cascadia Code', 
+  'Roboto Mono', monospace;
+
+// === FONT WEIGHTS ===
+$weight-normal: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+
+// === FONT SIZES (deprecated - use Ant Design Typography instead) ===
+// Kept for backward compatibility with old components
+$font-xs: fn.rem(12);
+$font-sm: fn.rem(14);
+$font-base: fn.rem(16);
+$font-lg: fn.rem(18);
+$font-xl: fn.rem(20);
+$font-2xl: fn.rem(24);
+$font-3xl: fn.rem(30);
+$font-4xl: fn.rem(36);
+
+// === LINE HEIGHTS ===
+$leading-tight: 1.2;
+$leading-normal: 1.6;
+$leading-relaxed: 1.8;
+
+// === RESPONSIVE FONT SIZES (use rem() function) ===
+// ⚠️ Only use these for edge cases where Ant Design Typography cannot be used
+// Examples: ::before/::after pseudo-elements, SVG text, canvas text
+
+@mixin responsive-heading-1 {
+  font-size: fn.rem(30);
+  font-weight: $weight-bold;
+  line-height: $leading-tight;
+  
+  @media (min-width: 768px) {
+    font-size: fn.rem(38);
+  }
+}
+
+@mixin responsive-heading-2 {
+  font-size: fn.rem(24);
+  font-weight: $weight-bold;
+  line-height: $leading-tight;
+  
+  @media (min-width: 768px) {
+    font-size: fn.rem(30);
+  }
+}
+
+@mixin responsive-heading-3 {
+  font-size: fn.rem(20);
+  font-weight: $weight-semibold;
+  line-height: $leading-normal;
+  
+  @media (min-width: 768px) {
+    font-size: fn.rem(24);
+  }
+}
+
+@mixin responsive-body {
+  font-size: fn.rem(14);
+  font-weight: $weight-normal;
+  line-height: $leading-normal;
+  
+  @media (min-width: 768px) {
+    font-size: fn.rem(16);
+  }
+}
+
+// === CODE STYLES ===
+@mixin code-block {
+  font-family: $font-mono;
+  font-size: fn.rem(14);
+  line-height: $leading-relaxed;
+  letter-spacing: 0.02em;
+}
+
+@mixin code-inline {
+  font-family: $font-mono;
+  font-size: 0.9em;
+  line-height: inherit;
+}

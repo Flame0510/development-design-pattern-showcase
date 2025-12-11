@@ -1,0 +1,45 @@
+/**
+ * COMPONENT: ExampleViewer
+ * SECTION: UI Components
+ * 
+ * ROLE:
+ * - Display pattern examples with progressive disclosure
+ * 
+ * PATTERNS USED:
+ * - BEM naming convention
+ * - Card-based layout for code examples
+ * - Responsive container with max-width
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use rem() for all sizing
+ * - Typography handled by Ant Design Typography in TSX
+ * - Minimal styles (most handled by Ant Design Card)
+ */
+
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+
+.example-viewer {
+  &__container {
+    max-width: fn.rem(900);
+    margin: 0 auto;
+
+    @include respond-below(md) {
+      max-width: 100%;
+    }
+  }
+
+  &__card {
+    background: $white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-base;
+  }
+
+  &__code-section {
+    margin: $spacing-6 0;
+
+    @include respond-below(md) {
+      margin: $spacing-4 0;
+    }
+  }
+}

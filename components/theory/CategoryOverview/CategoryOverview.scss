@@ -1,0 +1,107 @@
+/**
+ * CATEGORY OVERVIEW STYLES
+ * Reusable component for pattern category overview pages
+ * 
+ * PATTERN: BEM naming convention
+ * PURPOSE:
+ * - Category overview page with pattern cards
+ * - Responsive grid layout
+ * - Used by creational, structural, behavioral pages
+ */
+
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+
+.category-overview {
+  min-height: 100vh;
+  background-color: $navy-dark;
+  padding: fn.rem(48) fn.rem(24);
+
+  @include respond-below(md) {
+    padding: fn.rem(32) fn.rem(16);
+  }
+
+  &__container {
+    max-width: fn.rem(1280);
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: fn.rem(64);
+
+    @include respond-below(md) {
+      margin-bottom: fn.rem(40);
+    }
+  }
+
+  &__icon {
+    font-size: fn.rem(64);
+    margin-bottom: fn.rem(24);
+  }
+
+  &__title {
+    color: $yellow-primary !important;
+    font-size: fn.rem(42) !important;
+    font-weight: 700 !important;
+    margin-bottom: fn.rem(16) !important;
+
+    @include respond-below(md) {
+      font-size: fn.rem(32) !important;
+    }
+  }
+
+  &__description {
+    font-size: fn.rem(18) !important;
+    color: $white !important;
+    line-height: 1.8;
+
+    @include respond-below(md) {
+      font-size: fn.rem(16) !important;
+    }
+  }
+
+  &__card {
+    display: block;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(fn.rem(-4));
+    }
+
+    :global(.ant-card) {
+      height: 100%;
+      background-color: $beige-card;
+      border: fn.rem(2) solid transparent;
+      border-radius: fn.rem(16);
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: $pink-accent;
+      }
+    }
+  }
+
+  &__card-title {
+    color: $navy-dark !important;
+    font-size: fn.rem(22) !important;
+    font-weight: 600 !important;
+  }
+
+  &__card-description {
+    color: $navy-dark !important;
+    margin-bottom: fn.rem(20) !important;
+    font-size: fn.rem(15) !important;
+    line-height: 1.6;
+  }
+
+  &__card-cta {
+    color: $pink-accent !important;
+    font-weight: 600;
+    font-size: fn.rem(15);
+    display: flex;
+    align-items: center;
+    gap: fn.rem(8);
+  }
+}

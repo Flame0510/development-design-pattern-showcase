@@ -1,0 +1,249 @@
+/**
+ * COMPONENT: PatternLayout
+ * SECTION: Theory Pages
+ * 
+ * ROLE:
+ * - Styles for pattern theory detail pages
+ * - BEM convention for all nested elements
+ * - Responsive layout with mobile-first approach
+ */
+
+@use 'sass:color';
+@use '@/styles' as *;
+
+.pattern-layout {
+  min-height: 100vh;
+  background-color: $navy-dark;
+  padding: $spacing-12 $spacing-6;
+
+  @include respond-above(md) {
+    padding: $spacing-12 $spacing-8;
+  }
+
+  &__container {
+    max-width: 1152px; // 6xl
+    margin: 0 auto;
+  }
+
+  // Header section
+  &__header {
+    @include card-base;
+    background-color: $white;
+    margin-bottom: $spacing-8;
+
+    &-tag {
+      background-color: $yellow-primary;
+      color: $navy-dark;
+      font-weight: $weight-bold;
+      font-size: $font-sm;
+      padding: $spacing-1 $spacing-3;
+      border: none;
+      text-transform: uppercase;
+    }
+
+    &-title {
+      color: $navy-dark;
+      font-size: 42px;
+      font-weight: $weight-bold;
+      margin-bottom: $spacing-2;
+      margin-top: 0;
+    }
+
+    &-intent {
+      font-size: $font-lg;
+      color: $navy-dark;
+      line-height: 1.8;
+    }
+  }
+
+  // Collapse sections
+  &__collapse {
+    margin-bottom: $spacing-8;
+    background-color: $navy-medium;
+    border-color: $yellow-primary;
+
+    &-label {
+      color: $white;
+      font-size: $font-base;
+      font-weight: $weight-semibold;
+    }
+
+    &-icon {
+      margin-right: $spacing-2;
+
+      &--problem {
+        color: $pink-accent;
+      }
+
+      &--solution {
+        color: $yellow-primary;
+      }
+
+      &--structure {
+        color: $yellow-primary;
+      }
+    }
+
+    &-content {
+      color: $white;
+      font-size: $font-base;
+      line-height: 1.8;
+    }
+
+    &-participants {
+      margin-top: $spacing-4;
+
+      &-title {
+        color: $yellow-primary;
+        margin-bottom: $spacing-2;
+      }
+
+      &-item {
+        padding: $spacing-2 0;
+        border-bottom: 1px solid $navy-dark;
+        color: $white;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  // Card sections (Code examples, Real world, Guidelines)
+  &__card {
+    @include card-base;
+    background-color: $white;
+    margin-bottom: $spacing-8;
+
+    &-title {
+      color: $navy-dark;
+      font-size: $font-lg;
+      font-weight: $weight-semibold;
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+
+      &-icon {
+        color: $navy-dark;
+      }
+    }
+
+    &-example {
+      margin-bottom: $spacing-6;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &-title {
+        color: $navy-dark;
+        font-size: $font-xl;
+        margin-bottom: $spacing-2;
+      }
+
+      &-description {
+        color: $navy-dark;
+        font-size: $font-sm;
+        margin-bottom: $spacing-4;
+      }
+
+      &-divider {
+        border-color: $navy-dark;
+        margin: $spacing-6 0;
+      }
+    }
+  }
+
+  // Real world examples list
+  &__real-world {
+    &-item {
+      padding: $spacing-3 0;
+      border-bottom: 1px solid #e0d5c3;
+      display: flex;
+      align-items: flex-start;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &-icon {
+        color: $success;
+        margin-right: $spacing-2;
+        margin-top: $spacing-1;
+      }
+
+      &-text {
+        color: $navy-dark;
+        font-size: $font-sm;
+        flex: 1;
+      }
+    }
+  }
+
+  // Guidelines grid
+  &__guidelines {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-6;
+    margin-bottom: $spacing-8;
+
+    @include respond-above(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__guideline {
+    &-item {
+      padding: $spacing-3 0;
+      border-bottom: 1px solid #e0d5c3;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &-text {
+        color: $navy-dark;
+        font-size: $font-sm;
+
+        &--positive::before {
+          content: '✓ ';
+          color: $success;
+          font-weight: $weight-bold;
+        }
+
+        &--negative::before {
+          content: '✗ ';
+          color: $error;
+          font-weight: $weight-bold;
+        }
+      }
+    }
+  }
+
+  // Related patterns
+  &__related {
+    &-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-2;
+    }
+
+    &-tag {
+      background-color: $pink-accent;
+      color: $white;
+      border: none;
+      font-size: $font-sm;
+      padding: $spacing-1 $spacing-3;
+      border-radius: $radius-base;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: color.adjust($pink-accent, $lightness: -10%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba($pink-accent, 0.3);
+      }
+    }
+  }
+}

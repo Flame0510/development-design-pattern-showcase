@@ -1,7 +1,32 @@
+/**
+ * COMPONENT TYPE: Presentational
+ * SECTION: UI Components
+ *
+ * ROLE:
+ * - Display code examples with custom syntax highlighting
+ * - Provide copy-to-clipboard functionality with visual feedback
+ * - Support multiple languages (JavaScript, TypeScript, HTML, CSS, JSON)
+ *
+ * PATTERNS USED:
+ * - Presentational Component - Receives code as props, no business logic
+ * - Custom Syntax Highlighter - Token-based regex pattern matching
+ * - Strategy Pattern - Different highlighting patterns per language
+ * - BEM Convention - Clean CSS naming without modules
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - Keep component stateless except for copy feedback
+ * - Syntax highlighting is custom-built (no external libraries)
+ * - Add new languages by extending getPatterns()
+ * - Token overlap detection prevents highlighting conflicts
+ * - All styles in CodeBlock.scss with BEM naming
+ */
+
 "use client";
 
 import { useState } from "react";
-import styles from "./CodeBlock.module.css";
+import { Card, Button } from "antd";
+import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
+import './CodeBlock.scss';
 
 interface CodeBlockProps {
   code: string;
@@ -28,6 +53,7 @@ export default function CodeBlock({ code, language = "javascript" }: CodeBlockPr
     }
   };
 
+  // PATTERN: Strategy Pattern - Different highlighting rules per language
   const getPatterns = (lang: string) => {
     const typescript = [
       // Commenti (priorità alta)
@@ -126,16 +152,16 @@ export default function CodeBlock({ code, language = "javascript" }: CodeBlockPr
       }
     });
 
-    // Ordina per posizione
+    // Sort by position
     tokens.sort((a, b) => a.start - b.start);
 
-    // Costruisci HTML evidenziato
+    // Build highlighted HTML
     let result = "";
     let lastIndex = 0;
 
     tokens.forEach((token) => {
       result += escaped.substring(lastIndex, token.start);
-      result += `<span class="${styles[token.className]}">${token.text}</span>`;
+      result += `<span class="code-block__token--${token.className}">${token.text}</span>`;
       lastIndex = token.end;
     });
 
@@ -146,55 +172,27 @@ export default function CodeBlock({ code, language = "javascript" }: CodeBlockPr
   const highlightedCode = highlightCode(code, language);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <span className={styles.language}>{language.toUpperCase()}</span>
-        <button
+    <Card
+      className="code-block__card"
+      styles={{ body: { padding: 0 } }}
+    >
+      <div className="code-block__header">
+        <span className="code-block__language">{language.toUpperCase()}</span>
+        <Button
+          type="text"
+          icon={copied ? <CheckOutlined /> : <CopyOutlined />}
           onClick={handleCopy}
-          className={`${styles.copyBtn} ${copied ? styles.copied : ""}`}
+          className={copied ? "code-block__copy-button code-block__copy-button--copied" : "code-block__copy-button"}
         >
-          {copied ? (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={styles.icon}
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span>Copiato!</span>
-            </>
-          ) : (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={styles.icon}
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              <span>Copia</span>
-            </>
-          )}
-        </button>
+          {copied ? "Copiato!" : "Copia"}
+        </Button>
       </div>
-      <div className={styles.content}>
-        <pre className={styles.pre}>
-          <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
-        </pre>
-      </div>
-    </div>
+      <pre className="code-block__pre">
+        <code 
+          className="code-block__code"
+          dangerouslySetInnerHTML={{ __html: highlightedCode }} 
+        />
+      </pre>
+    </Card>
   );
 }

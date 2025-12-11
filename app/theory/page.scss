@@ -1,0 +1,70 @@
+/**
+ * THEORY PAGE STYLES
+ * Main theory overview page styles
+ * 
+ * PATTERN: BEM naming convention
+ * PURPOSE:
+ * - Theory overview page with category grid
+ * - Responsive layout (3 columns → 1 column on mobile)
+ * - Typography handled by Ant Design components
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use rem() for all sizing
+ * - Use SCSS color variables
+ * - Typography in TSX with Ant Design Typography
+ */
+
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+
+.theory-page {
+  min-height: calc(100vh - 120px);
+  background-color: $navy-dark;
+  padding: fn.rem(80) fn.rem(24);
+
+  @include respond-below(md) {
+    padding: fn.rem(40) fn.rem(16);
+  }
+
+  &__container {
+    max-width: fn.rem(1280);
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: fn.rem(64);
+
+    @include respond-below(md) {
+      margin-bottom: fn.rem(40);
+    }
+  }
+
+  &__title {
+    color: $yellow-primary !important;
+    text-transform: uppercase;
+    letter-spacing: fn.rem(2);
+    font-weight: 800 !important;
+    margin-bottom: fn.rem(16) !important;
+    text-shadow: 0 fn.rem(2) fn.rem(8) rgba($yellow-primary, 0.3);
+  }
+
+  &__subtitle {
+    color: rgba($white, 0.85) !important;
+    margin-bottom: 0 !important;
+    font-size: fn.rem(18) !important;
+    font-weight: 500 !important;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: fn.rem(24);
+    margin-bottom: fn.rem(48);
+
+    @include respond-below(md) {
+      grid-template-columns: 1fr;
+      gap: fn.rem(16);
+    }
+  }
+}

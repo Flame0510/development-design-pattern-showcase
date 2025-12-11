@@ -1,0 +1,88 @@
+/**
+ * COMPONENT: Navbar
+ * SECTION: Navigation
+ * 
+ * ROLE:
+ * - Global navigation bar with dropdown menus for pattern categories
+ * - Sticky header with border accent
+ * - Responsive menu for mobile and desktop
+ * 
+ * PATTERNS USED:
+ * - BEM naming convention
+ * - Gradient background for depth
+ * - Sticky positioning for persistent navigation
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use rem() for all sizing
+ * - Use SCSS color variables with rgba($color, opacity)
+ * - Dropdown styles controlled by Ant Design theme
+ */
+
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+@use 'sass:color';
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: $z-50;
+  background: linear-gradient(135deg, color.adjust($navy-dark, $lightness: 2%) 0%, $navy-dark 100%);
+  border-bottom: fn.rem(3) solid $yellow-primary;
+  box-shadow: 0 fn.rem(4) fn.rem(20) rgba($black, 0.3);
+  backdrop-filter: blur(fn.rem(10));
+
+  &__container {
+    max-width: fn.rem(1280);
+    margin: 0 auto;
+  }
+
+  &__menu {
+    border: none;
+    background-color: transparent;
+    font-weight: 600;
+
+    :global(.ant-menu-item),
+    :global(.ant-menu-submenu-title) {
+      color: rgba($white, 0.85);
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: $yellow-primary;
+        background-color: rgba($yellow-primary, 0.1);
+      }
+    }
+
+    :global(.ant-menu-item-selected) {
+      color: $yellow-primary;
+      background-color: rgba($yellow-primary, 0.15);
+    }
+
+    // Dropdown submenu styles
+    :global(.ant-menu-submenu-popup) {
+      background: color.adjust($navy-dark, $lightness: 3%);
+      border-radius: fn.rem(8);
+      box-shadow: 0 fn.rem(4) fn.rem(20) rgba($black, 0.5);
+      
+      :global(.ant-menu) {
+        background: transparent;
+        border-radius: fn.rem(8);
+      }
+
+      :global(.ant-menu-item) {
+        color: rgba($white, 0.85);
+        margin: fn.rem(4) fn.rem(8);
+        border-radius: fn.rem(4);
+
+        &:hover {
+          color: $yellow-primary;
+          background-color: rgba($yellow-primary, 0.15);
+        }
+      }
+
+      :global(.ant-menu-item-selected) {
+        color: $yellow-primary;
+        background-color: rgba($yellow-primary, 0.2);
+      }
+    }
+  }
+}

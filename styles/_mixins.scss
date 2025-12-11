@@ -1,0 +1,210 @@
+/**
+ * MIXINS - Design Pattern Showcase
+ * Reusable CSS patterns
+ * 
+ * USAGE:
+ * - Import: @use '@/styles/mixins' as mixins;
+ * - Include: @include mixins.card-hover;
+ */
+
+@use './colors' as colors;
+@use './spacing' as spacing;
+@use 'sass:map';
+
+// === RESPONSIVE BREAKPOINTS ===
+// PATTERN: Template Method Pattern (media query templates)
+// PURPOSE:
+// - Centralized breakpoint definitions for consistency
+// - Mobile-first approach (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1400px)
+// - Bootstrap-compatible breakpoints for familiarity
+//
+// USAGE:
+// @include respond-above(md) { font-size: rem(18); }
+// @include respond-below(lg) { display: none; }
+// @include respond-between(sm, lg) { padding: rem(16); }
+
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Respond above breakpoint (min-width)
+@mixin respond-above($breakpoint) {
+  $min: map.get($breakpoints, $breakpoint);
+  @if $min != 0 {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content; // xs breakpoint = mobile-first base styles
+  }
+}
+
+// Respond below breakpoint (max-width)
+@mixin respond-below($breakpoint) {
+  $max: map.get($breakpoints, $breakpoint) - 1px;
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+// Respond between two breakpoints
+@mixin respond-between($min-breakpoint, $max-breakpoint) {
+  $min: map.get($breakpoints, $min-breakpoint);
+  $max: map.get($breakpoints, $max-breakpoint) - 1px;
+  
+  @if $min != 0 {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @media (max-width: $max) {
+      @content;
+    }
+  }
+}
+
+// Container mixin with responsive max-widths
+@mixin container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 spacing.$spacing-4;
+  
+  @include respond-above(sm) {
+    max-width: 540px;
+  }
+  
+  @include respond-above(md) {
+    max-width: 720px;
+  }
+  
+  @include respond-above(lg) {
+    max-width: 960px;
+  }
+  
+  @include respond-above(xl) {
+    max-width: 1140px;
+  }
+  
+  @include respond-above(xxl) {
+    max-width: 1320px;
+  }
+}
+
+// === HOVER EFFECTS ===
+@mixin hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: spacing.$shadow-lg;
+  }
+}
+
+@mixin hover-glow($color: colors.$yellow-primary) {
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0 20px rgba($color, 0.4);
+  }
+}
+
+@mixin hover-border-color($color: colors.$pink-accent) {
+  transition: border-color 0.3s ease;
+  
+  &:hover {
+    border-color: $color;
+  }
+}
+
+// === CARD PATTERNS ===
+@mixin card-base {
+  background-color: colors.$white;
+  border-radius: spacing.$radius-lg;
+  padding: spacing.$spacing-6;
+}
+
+@mixin card-hover {
+  @include card-base;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    border-color: colors.$pink-accent;
+    transform: translateY(-4px);
+  }
+}
+
+@mixin card-navy {
+  background-color: colors.$navy-medium;
+  border-radius: spacing.$radius-lg;
+  padding: spacing.$spacing-6;
+  color: colors.$white;
+}
+
+// === FLEXBOX UTILITIES ===
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+// === TRUNCATE TEXT ===
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+}
+
+// === FOCUS STYLES ===
+@mixin focus-ring($color: colors.$yellow-primary) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($color, 0.3);
+}
+
+// === SCROLLBAR CUSTOM ===
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: colors.$navy-light;
+    border-radius: spacing.$radius-full;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: colors.$yellow-primary;
+    border-radius: spacing.$radius-full;
+    
+    &:hover {
+      background: colors.$yellow-dark;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+/**
+ * MAIN STYLES INDEX - Design Pattern Showcase
+ * Central import point for all SCSS modules
+ * 
+ * USAGE IN COMPONENTS:
+ * @use '@/styles' as styles;
+ * background: styles.$navy-dark;
+ * @include styles.card-hover;
+ */
+
+// Forward all modules for easy access
+@forward './colors';
+@forward './functions';
+@forward './typography';
+@forward './spacing';
+@forward './mixins';
+
+// Import for internal use
+@use './colors' as colors;
+@use './typography' as typography;
+@use './spacing' as spacing;
+@use './mixins' as mixins;

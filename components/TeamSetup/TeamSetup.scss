@@ -1,0 +1,107 @@
+/**
+ * COMPONENT: TeamSetup
+ * SECTION: Game Setup
+ * 
+ * ROLE:
+ * - Team configuration interface before game starts
+ * - Add/remove teams with color assignment
+ * - Form validation and start button
+ * 
+ * PATTERNS USED:
+ * - BEM naming convention
+ * - Card-based form layout
+ * - Avatar color indicators
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use rem() for all sizing
+ * - Typography handled by Ant Design Typography in TSX
+ * - Ant Design List component for team display
+ */
+
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+
+.team-setup {
+  max-width: fn.rem(700);
+  margin: 0 auto;
+  padding: $spacing-8;
+
+  @include respond-below(md) {
+    padding: $spacing-4;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-8;
+
+    @include respond-below(md) {
+      margin-bottom: $spacing-6;
+    }
+
+    &-title {
+      color: $navy-dark;
+      // Typography handled by Ant Design Typography in TSX
+    }
+
+    &-subtitle {
+      color: $gray-600;
+      // Typography handled by Ant Design Typography in TSX
+    }
+  }
+
+  &__card {
+    margin-bottom: $spacing-6;
+  }
+
+  &__card-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  &__list {
+    margin-bottom: $spacing-4;
+  }
+
+  &__team {
+    &-avatar {
+      width: fn.rem(40);
+      height: fn.rem(40);
+      border-radius: 50%;
+    }
+
+    &-name {
+      font-weight: $weight-semibold;
+    }
+
+    &-color {
+      color: $gray-600;
+      // Typography handled by Ant Design Typography in TSX
+    }
+  }
+
+  &__form {
+    width: 100%;
+
+    &-input {
+      flex: 1;
+    }
+  }
+
+  &__warning {
+    color: $warning;
+    // Typography handled by Ant Design Typography in TSX
+  }
+
+  &__start-button {
+    // Typography handled by Ant Design Typography in TSX
+    padding: $spacing-6;
+    height: auto;
+  }
+
+  &__empty-state {
+    text-align: center;
+    background-color: $gray-50;
+    padding: $spacing-6;
+  }
+}

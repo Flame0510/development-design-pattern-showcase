@@ -1,0 +1,45 @@
+/**
+ * PAGE: Home
+ * SECTION: Game Logic
+ * 
+ * ROLE:
+ * - Main game page with team setup and game controller
+ */
+
+@use 'sass:color';
+@use '@/styles' as *;
+
+.home {
+  &__main {
+    min-height: 100vh;
+    padding: $spacing-12 $spacing-6;
+    background-color: $navy-dark;
+  }
+
+  &__reset-button {
+    position: fixed;
+    bottom: $spacing-8;
+    right: $spacing-8;
+    padding: $spacing-3 $spacing-6;
+    font-size: $font-sm;
+    font-weight: $weight-semibold;
+    color: $white;
+    background-color: $error;
+    border: none;
+    border-radius: $radius-base;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: $shadow-lg;
+    z-index: $z-50;
+
+    &:hover {
+      background-color: color.adjust($error, $lightness: -10%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($error, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}

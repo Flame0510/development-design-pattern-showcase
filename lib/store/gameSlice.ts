@@ -1,3 +1,24 @@
+/**
+ * COMPONENT TYPE: Store
+ * SECTION: State Management
+ *
+ * ROLE:
+ * - Define game state slice with all reducers and actions
+ * - Manage teams, rounds, examples, and answer history
+ * - Provide middleware for localStorage sync and cross-window communication
+ *
+ * PATTERNS USED:
+ * - Redux Toolkit Slice Pattern - Immer-powered reducers
+ * - Middleware Pattern - syncWithLocalStorage for persistence
+ * - Observer Pattern - Custom storage events for real-time sync
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - State is persisted to localStorage after every action
+ * - Custom 'gameStateChanged' event enables cross-window sync
+ * - Immer allows "mutable" updates (actually immutable)
+ * - usedExampleIds is array (not Set) for serialization
+ */
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Team, PatternExample, Category } from '@/lib/types';
 

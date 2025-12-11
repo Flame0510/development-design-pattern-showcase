@@ -1,10 +1,29 @@
+/**
+ * COMPONENT TYPE: Container
+ * SECTION: Game Logic
+ *
+ * ROLE:
+ * - Main entry point for the game application
+ * - Manage team setup and game mode toggle
+ * - Persist teams to localStorage for cross-session continuity
+ *
+ * PATTERNS USED:
+ * - Container Component - Manages state and delegates to TeamSetup/RoundController
+ * - State Persistence - localStorage for team data
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - Shows TeamSetup when no teams configured
+ * - Shows RoundController when teams are ready
+ * - Reset button clears all state and reloads page
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
-import TeamSetup from "@/components/TeamSetup";
-import RoundController from "@/components/RoundController";
+import TeamSetup from "@/components/TeamSetup/TeamSetup";
+import RoundController from "@/components/RoundController/RoundController";
 import type { Team } from "@/lib/types";
-import styles from "./page.module.css";
+import './page.scss';
 
 export default function Home() {
   const [teams, setTeams] = useState<Team[] | null>(null);
@@ -44,13 +63,13 @@ export default function Home() {
   };
 
   return (
-    <main className={styles.main}>
+    <main className="home__main">
       {!teams ? (
         <TeamSetup onStart={handleStart} />
       ) : (
         <>
           <RoundController teams={teams} onUpdateTeams={handleUpdateTeams} />
-          <button onClick={handleReset} className={styles.resetButton}>
+          <button onClick={handleReset} className="home__reset-button">
             Ricomincia da capo
           </button>
         </>

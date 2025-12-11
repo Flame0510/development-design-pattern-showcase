@@ -1,0 +1,332 @@
+/**
+ * PAGE: Match Viewer
+ * SECTION: Game Logic
+ * 
+ * ROLE:
+ * - Second-screen live game viewer with glassmorphism design
+ */
+
+@use '@/styles' as *;
+
+.match-viewer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: $white;
+  padding: $spacing-8;
+  font-family: $font-sans;
+
+  // Header
+  &__header {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: $radius-xl;
+    padding: $spacing-6 $spacing-8;
+    margin-bottom: $spacing-8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    @include heading-1;
+    margin: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  &__round-info {
+    display: flex;
+    gap: $spacing-8;
+    align-items: center;
+  }
+
+  &__round-number {
+    @include heading-4;
+    padding: $spacing-2 $spacing-6;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 2rem;
+    border: 2px solid #667eea;
+  }
+
+  &__timer {
+    font-size: 2rem;
+    font-weight: $weight-bold;
+    font-family: $font-mono;
+    color: $success;
+    min-width: 120px;
+    text-align: center;
+
+    &--paused {
+      color: $yellow-primary;
+    }
+  }
+
+  // Grid layout
+  &__grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: $spacing-8;
+    margin-bottom: $spacing-8;
+
+    @include respond-above(lg) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__main-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-8;
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-8;
+  }
+
+  // Card component
+  &__card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: $radius-xl;
+    padding: $spacing-6;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__card-title {
+    @include heading-3;
+    margin: 0 0 $spacing-4 0;
+    color: #a78bfa;
+  }
+
+  // Code block
+  &__code-block {
+    background: #0d1117;
+    border-radius: $radius-base;
+    padding: $spacing-6;
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    pre {
+      margin: 0;
+      font-family: $font-mono;
+      font-size: $font-sm;
+      line-height: 1.6;
+      color: #c9d1d9;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+
+  // Example section
+  &__example-title {
+    @include heading-4;
+    margin-bottom: $spacing-4;
+  }
+
+  &__category-badge {
+    display: inline-block;
+    padding: $spacing-1 $spacing-3;
+    border-radius: 1rem;
+    font-size: $font-sm;
+    font-weight: $weight-semibold;
+    margin-bottom: $spacing-4;
+
+    &--creational {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid #4ade80;
+    }
+
+    &--structural {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+    }
+
+    &--behavioral {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid #c084fc;
+    }
+  }
+
+  // Solution section
+  &__solution-section {
+    margin-top: $spacing-6;
+    padding-top: $spacing-6;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__solution-title {
+    @include heading-4;
+    margin-bottom: $spacing-3;
+    color: $yellow-primary;
+  }
+
+  &__pattern-list {
+    display: flex;
+    gap: $spacing-2;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-4;
+  }
+
+  &__pattern-tag {
+    padding: $spacing-2 $spacing-4;
+    background: rgba(251, 191, 36, 0.2);
+    border: 1px solid $yellow-primary;
+    border-radius: $radius-base;
+    font-weight: $weight-semibold;
+    color: $yellow-primary;
+  }
+
+  &__explanation {
+    line-height: 1.8;
+    color: $gray-300;
+  }
+
+  // Scoreboard
+  &__scoreboard {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  &__team-score {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    padding: $spacing-4;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: $radius-base;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__team-rank {
+    font-size: 1.5rem;
+    font-weight: $weight-bold;
+    color: #a78bfa;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  &__team-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex: 1;
+  }
+
+  &__team-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &__team-name {
+    @include heading-4;
+  }
+
+  &__team-points {
+    font-size: 1.5rem;
+    font-weight: $weight-bold;
+    color: $success;
+  }
+
+  // History
+  &__history-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    max-height: 500px;
+    overflow-y: auto;
+    @include custom-scrollbar;
+  }
+
+  &__history-item {
+    padding: $spacing-4;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: $radius-base;
+    border-left: 3px solid;
+  }
+
+  &__history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-2;
+  }
+
+  &__history-round {
+    font-weight: $weight-semibold;
+    color: #a78bfa;
+  }
+
+  &__history-time {
+    font-size: $font-sm;
+    color: $gray-400;
+  }
+
+  &__history-title {
+    font-size: $font-base;
+    margin-bottom: $spacing-2;
+  }
+
+  &__history-winner {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-sm;
+  }
+
+  &__winner-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+  }
+
+  // No data state
+  &__no-data {
+    text-align: center;
+    padding: $spacing-12;
+    color: $gray-400;
+    @include heading-4;
+  }
+
+  &__no-data-icon {
+    font-size: 3rem;
+    margin-bottom: $spacing-4;
+    opacity: 0.5;
+  }
+
+  // Stats
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-4;
+  }
+
+  &__stat-item {
+    padding: $spacing-4;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: $radius-base;
+    text-align: center;
+  }
+
+  &__stat-value {
+    font-size: 2rem;
+    font-weight: $weight-bold;
+    color: $success;
+    margin-bottom: $spacing-1;
+  }
+
+  &__stat-label {
+    font-size: $font-sm;
+    color: $gray-400;
+  }
+}

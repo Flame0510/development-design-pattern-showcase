@@ -1,3 +1,22 @@
+/**
+ * COMPONENT TYPE: Utility
+ * SECTION: Data
+ *
+ * ROLE:
+ * - Load and aggregate pattern examples from JSON files
+ * - Filter examples by category and pattern count
+ * - Provide random example selection with exclusion logic
+ *
+ * PATTERNS USED:
+ * - Facade Pattern - Simple API over complex filtering logic
+ * - Strategy Pattern - Different filtering strategies (category, count, both)
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - JSON files in data/ contain 50 examples each
+ * - Random selection excludes already-used examples
+ * - Returns null when no examples match criteria
+ */
+
 import type { Category, PatternExample } from "./types";
 import creationalData from "@/data/creational.json";
 import structuralData from "@/data/structural.json";

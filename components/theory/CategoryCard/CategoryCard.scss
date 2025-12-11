@@ -1,0 +1,174 @@
+/**
+ * CATEGORY CARD STYLES
+ * Category card component styles with cartoon-like design
+ * 
+ * PATTERN: BEM naming convention
+ * PURPOSE:
+ * - Modular, reusable card component
+ * - Hover effects with transform and shadow
+ * - Responsive sizing with rem() function
+ *
+ * BEM Convention: .category-card__element--modifier
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use SCSS color variables from _colors.scss (no hardcoded colors)
+ * - Use rem() function from _functions.scss (no px units)
+ * - Use Ant Design Typography in TSX, not font-size here
+ */
+
+@use "@/styles" as *;
+@use "@/styles/functions" as fn;
+@use "sass:color";
+
+.category-card {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &:hover {
+        transform: translateY(fn.rem(-8));
+
+        .category-card__wrapper {
+            box-shadow: 0 fn.rem(16) fn.rem(40) rgba($yellow-primary, 0.35),
+                0 fn.rem(8) fn.rem(16) rgba($navy-dark, 0.1);
+            border-color: $yellow-primary;
+        }
+
+        .category-card__icon {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 fn.rem(4) fn.rem(8) rgba($yellow-primary, 0.4));
+        }
+
+        .category-card__cta {
+            gap: fn.rem(10);
+        }
+    }
+
+    &__wrapper {
+        height: 100%;
+        background: $beige-card;
+        border: fn.rem(3) solid $gray-300;
+        border-radius: fn.rem(16);
+        padding: fn.rem(36) fn.rem(28);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 fn.rem(4) fn.rem(12) rgba($navy-dark, 0.08),
+            0 fn.rem(2) fn.rem(4) rgba($navy-dark, 0.04);
+        position: relative;
+        overflow: hidden;
+
+        // Subtle gradient overlay
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: fn.rem(4);
+            background: linear-gradient(
+                90deg,
+                $pink-accent 0%,
+                $yellow-primary 50%,
+                $navy-light 100%
+            );
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        // Responsive padding
+        @include respond-below(md) {
+            padding: fn.rem(28) fn.rem(20);
+        }
+    }
+
+    &__icon {
+        font-size: fn.rem(72);
+        color: $navy-dark;
+        margin-bottom: $spacing-4;
+        margin-top: fn.rem(8);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 fn.rem(2) fn.rem(4) rgba($navy-dark, 0.1));
+
+        :global(.anticon) {
+            font-size: fn.rem(72);
+            display: block;
+
+            // Responsive icon size
+            @include respond-below(md) {
+                font-size: fn.rem(56);
+            }
+        }
+    }
+
+    &__badge {
+        margin-bottom: $spacing-3;
+
+        :global(.ant-badge-count) {
+            background: linear-gradient(
+                135deg,
+                $yellow-primary 0%,
+                color.adjust($yellow-primary, $lightness: -5%) 100%
+            );
+            color: $navy-dark;
+            font-weight: 800;
+            font-size: fn.rem(13);
+            padding: fn.rem(4) fn.rem(10);
+            border-radius: fn.rem(16);
+            box-shadow: 0 fn.rem(2) fn.rem(8) rgba($yellow-primary, 0.4),
+                0 fn.rem(1) fn.rem(2) rgba($navy-dark, 0.1);
+            border: fn.rem(2) solid rgba($white, 0.3);
+        }
+    }
+
+    &__title {
+        color: $navy-dark !important;
+        margin-bottom: fn.rem(14) !important;
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        letter-spacing: fn.rem(0.5);
+        font-size: fn.rem(20) !important;
+    }
+
+    &__description {
+        color: $gray-700 !important;
+        line-height: 1.7;
+        margin-bottom: $spacing-5;
+        flex-grow: 1;
+        font-size: fn.rem(15) !important;
+    }
+
+    &__cta {
+        color: $pink-accent !important;
+        font-weight: 700;
+        font-size: fn.rem(15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: fn.rem(8);
+        text-transform: uppercase;
+        letter-spacing: fn.rem(1);
+        padding: fn.rem(8) fn.rem(16);
+        border-radius: fn.rem(8);
+        background: linear-gradient(
+            135deg,
+            rgba($pink-accent, 0.08) 0%,
+            rgba($pink-accent, 0.04) 100%
+        );
+        border: fn.rem(2) solid transparent;
+
+        :global(.anticon) {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    }
+
+    // Hover state for CTA arrow animation
+    &:hover &__cta :global(.anticon) {
+        transform: translateX(fn.rem(4));
+    }
+}

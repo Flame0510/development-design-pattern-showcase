@@ -1,0 +1,120 @@
+/**
+ * COMPONENT: CodeBlock
+ * SECTION: UI Components
+ * 
+ * ROLE:
+ * - Syntax-highlighted code display with copy functionality
+ * - Custom token-based highlighter for multiple languages
+ * 
+ * PATTERNS USED:
+ * - BEM naming convention
+ * - Custom syntax highlighter (Dracula theme colors)
+ * - Custom scrollbar for code overflow
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Use rem() for all sizing
+ * - Syntax highlighting colors are from Dracula theme
+ * - GitHub dark background: $code-bg
+ * - Typography: use $font-mono for code
+ */
+
+@use 'sass:color';
+@use '@/styles' as *;
+@use '@/styles/functions' as fn;
+
+.code-block {
+    &__card {
+        background-color: $navy-medium;
+        border: fn.rem(1) solid $yellow-primary;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-3;
+        padding: $spacing-4;
+        padding-bottom: $spacing-1;
+    }
+
+    &__language {
+        color: $yellow-primary;
+        // Typography handled by Ant Design Typography in TSX
+        text-transform: uppercase;
+    }
+
+  &__copy-button {
+    background-color: $yellow-primary;
+    color: $navy-dark;
+    border: none;
+    
+    &:hover {
+            background-color: color.adjust($yellow-primary, $lightness: -10%);
+    }        &--copied {
+            background-color: $success;
+            color: $white;
+        }
+    }
+
+    &__pre {
+        margin: 0;
+        padding: $spacing-4;
+        background-color: $code-bg;
+        border-radius: $radius-base;
+        overflow-x: auto;
+        font-family: $font-mono;
+        font-size: fn.rem(14);
+        line-height: 1.6;
+
+        @include custom-scrollbar;
+
+        @include respond-below(md) {
+            font-size: fn.rem(12);
+        }
+    }
+
+    &__code {
+        color: $white;
+    }
+
+    // Syntax highlighting tokens (Dracula theme)
+    &__token {
+        &--keyword {
+            color: $code-keyword;
+            font-weight: $weight-semibold;
+        }
+
+        &--string {
+            color: $code-string;
+        }
+
+        &--comment {
+            color: $code-comment;
+            font-style: italic;
+        }
+
+        &--function {
+            color: $code-function;
+        }
+
+        &--number {
+            color: $code-number;
+        }
+
+        &--operator {
+            color: $code-operator;
+        }
+
+        &--punctuation {
+            color: $code-punctuation;
+        }
+
+        &--class {
+            color: $code-class;
+        }
+
+        &--property {
+            color: $code-string;
+        }
+    }
+}

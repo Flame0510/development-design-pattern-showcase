@@ -1,0 +1,34 @@
+/**
+ * SCSS FUNCTIONS
+ * Utility functions for consistent styling
+ * 
+ * PATTERNS USED:
+ * - Strategy Pattern: Different conversion strategies (px to rem, em, etc.)
+ * - DRY Principle: Centralized conversion logic
+ */
+
+// Base font size for rem calculation (browser default)
+$base-font-size: 16;
+
+/**
+ * Convert pixels to rem units
+ * @param {number} $pixels - The pixel value to convert
+ * @return {string} - The rem value
+ * 
+ * USAGE:
+ * font-size: rem(16); // 1rem
+ * padding: rem(24); // 1.5rem
+ */
+@function rem($pixels) {
+    @return calc($pixels / $base-font-size) * 1rem;
+}
+
+/**
+ * Convert pixels to em units
+ * @param {number} $pixels - The pixel value to convert
+ * @param {number} $context - The context font size (default: base-font-size)
+ * @return {string} - The em value
+ */
+@function em($pixels, $context: $base-font-size) {
+    @return calc($pixels / $context) * 1em;
+}

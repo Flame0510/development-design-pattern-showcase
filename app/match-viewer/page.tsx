@@ -1,9 +1,30 @@
+/**
+ * COMPONENT TYPE: Container
+ * SECTION: Game Logic
+ *
+ * ROLE:
+ * - Second-screen viewer for live game monitoring
+ * - Sync with main game window via localStorage and events
+ * - Display live scoreboard, timer, and current example
+ *
+ * PATTERNS USED:
+ * - Observer Pattern - localStorage + storage events for cross-window sync
+ * - Polling Fallback - 500ms interval ensures sync reliability
+ * - Real-time Updates - Timer and state updates every second
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - Opens in popup window from RoundController
+ * - Uses storage events (primary) and polling (fallback)
+ * - Dispatches hydrate action to sync Redux state
+ * - Timer resets when new example is shown
+ */
+
 "use client";
 
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { hydrate } from '@/lib/store/gameSlice';
-import styles from './page.module.css';
+import './page.scss';
 
 export default function MatchViewer() {
   const dispatch = useAppDispatch();
@@ -83,14 +104,14 @@ export default function MatchViewer() {
   const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
 
   return (
-    <div className={styles.matchViewer}>
+    <div className="match-viewer">
       {/* Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>🎮 Match Viewer</h1>
-        <div className={styles.roundInfo}>
-          <div className={styles.roundNumber}>Round {roundNumber}</div>
+      <div className="match-viewer__header">
+        <h1 className="match-viewer__title">🎮 Match Viewer</h1>
+        <div className="match-viewer__round-info">
+          <div className="match-viewer__round-number">Round {roundNumber}</div>
           {roundStartTime && (
-            <div className={`${styles.timer} ${isPaused ? styles.paused : ''}`}>
+            <div className={isPaused ? 'match-viewer__timer match-viewer__timer--paused' : 'match-viewer__timer'}>
               {isPaused ? '⏸️' : '⏱️'} {formatTime(elapsedTime)}
             </div>
           )}
@@ -98,33 +119,33 @@ export default function MatchViewer() {
       </div>
 
       {currentExample ? (
-        <div className={styles.gridLayout}>
+        <div className="match-viewer__grid-layout">
           {/* Main Content */}
-          <div className={styles.mainContent}>
+          <div className="match-viewer__main-content">
             {/* Codice Esempio */}
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>📝 Codice Esempio</h2>
-              <div className={styles.exampleTitle}>{currentExample.title}</div>
-              <span className={`${styles.categoryBadge} ${styles[currentExample.category]}`}>
+            <div className="match-viewer__card">
+              <h2 className="match-viewer__card-title">📝 Codice Esempio</h2>
+              <div className="match-viewer__example-title">{currentExample.title}</div>
+              <span className={`match-viewer__category-badge match-viewer__category-badge--${currentExample.category}`}>
                 {currentExample.category}
               </span>
-              <div className={styles.codeBlock}>
+              <div className="match-viewer__code-block">
                 <pre>{currentExample.code}</pre>
               </div>
             </div>
 
             {/* Soluzione - Sempre visibile nel Match Viewer */}
-            <div className={styles.card}>
-              <div className={styles.solutionSection}>
-                <h3 className={styles.solutionTitle}>💡 Soluzione</h3>
-                <div className={styles.patternList}>
+            <div className="match-viewer__card">
+              <div className="match-viewer__solution-section">
+                <h3 className="match-viewer__solution-title">💡 Soluzione</h3>
+                <div className="match-viewer__pattern-list">
                   {currentExample.solutionPatterns.map((pattern, index) => (
-                    <span key={index} className={styles.patternTag}>
+                    <span key={index} className="match-viewer__pattern-tag">
                       {pattern}
                     </span>
                   ))}
                 </div>
-                <p className={styles.explanation}>
+                <p className="match-viewer__explanation">
                   {currentExample.solutionExplanation}
                 </p>
               </div>
@@ -132,37 +153,37 @@ export default function MatchViewer() {
           </div>
 
           {/* Sidebar */}
-          <div className={styles.sidebar}>
+          <div className="match-viewer__sidebar">
             {/* Classifica */}
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>🏆 Classifica</h2>
-              <div className={styles.scoreboard}>
+            <div className="match-viewer__card">
+              <h2 className="match-viewer__card-title">🏆 Classifica</h2>
+              <div className="match-viewer__scoreboard">
                 {sortedTeams.map((team, index) => (
-                  <div key={team.id} className={styles.teamScore}>
-                    <div className={styles.teamRank}>#{index + 1}</div>
-                    <div className={styles.teamInfo}>
+                  <div key={team.id} className="match-viewer__team-score">
+                    <div className="match-viewer__team-rank">#{index + 1}</div>
+                    <div className="match-viewer__team-info">
                       <div
-                        className={styles.teamColor}
+                        className="match-viewer__team-color"
                         style={{ backgroundColor: team.color }}
                       />
-                      <span className={styles.teamName}>{team.name}</span>
+                      <span className="match-viewer__team-name">{team.name}</span>
                     </div>
-                    <div className={styles.teamPoints}>{team.score}</div>
+                    <div className="match-viewer__team-points">{team.score}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Statistiche */}
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>📊 Statistiche</h2>
-              <div className={styles.stats}>
-                <div className={styles.statItem}>
-                  <div className={styles.statValue}>{answerHistory.length}</div>
-                  <div className={styles.statLabel}>Round completati</div>
+            <div className="match-viewer__card">
+              <h2 className="match-viewer__card-title">📊 Statistiche</h2>
+              <div className="match-viewer__stats">
+                <div className="match-viewer__stat-item">
+                  <div className="match-viewer__stat-value">{answerHistory.length}</div>
+                  <div className="match-viewer__stat-label">Round completati</div>
                 </div>
-                <div className={styles.statItem}>
-                  <div className={styles.statValue}>
+                <div className="match-viewer__stat-item">
+                  <div className="match-viewer__stat-value">
                     {answerHistory.length > 0
                       ? Math.floor(
                           answerHistory.reduce((sum, h) => sum + h.timeElapsed, 0) /
@@ -171,48 +192,48 @@ export default function MatchViewer() {
                       : 0}
                     s
                   </div>
-                  <div className={styles.statLabel}>Tempo medio</div>
+                  <div className="match-viewer__stat-label">Tempo medio</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className={styles.noData}>
-          <div className={styles.noDataIcon}>🎯</div>
+        <div className="match-viewer__no-data">
+          <div className="match-viewer__no-data-icon">🎯</div>
           <p>In attesa del prossimo esempio...</p>
         </div>
       )}
 
       {/* Storico */}
-      <div className={styles.card}>
-        <h2 className={styles.cardTitle}>📜 Storico Risposte</h2>
+      <div className="match-viewer__card">
+        <h2 className="match-viewer__card-title">📜 Storico Risposte</h2>
         {answerHistory.length > 0 ? (
-          <div className={styles.historyList}>
+          <div className="match-viewer__history-list">
             {[...answerHistory].reverse().map((item, index) => (
               <div
                 key={index}
-                className={styles.historyItem}
+                className="match-viewer__history-item"
                 style={{ borderLeftColor: item.winnerTeam?.color || '#666' }}
               >
-                <div className={styles.historyHeader}>
-                  <span className={styles.historyRound}>Round {item.roundNumber}</span>
-                  <span className={styles.historyTime}>
+                <div className="match-viewer__history-header">
+                  <span className="match-viewer__history-round">Round {item.roundNumber}</span>
+                  <span className="match-viewer__history-time">
                     {formatTime(item.timeElapsed)}
                   </span>
                 </div>
-                <div className={styles.historyTitle}>{item.example.title}</div>
-                <div className={styles.patternList}>
+                <div className="match-viewer__history-title">{item.example.title}</div>
+                <div className="match-viewer__pattern-list">
                   {item.example.solutionPatterns.map((pattern, i) => (
-                    <span key={i} className={styles.patternTag}>
+                    <span key={i} className="match-viewer__pattern-tag">
                       {pattern}
                     </span>
                   ))}
                 </div>
                 {item.winnerTeam && (
-                  <div className={styles.historyWinner}>
+                  <div className="match-viewer__history-winner">
                     <div
-                      className={styles.winnerColor}
+                      className="match-viewer__winner-color"
                       style={{ backgroundColor: item.winnerTeam.color }}
                     />
                     <span>Vinto da {item.winnerTeam.name}</span>

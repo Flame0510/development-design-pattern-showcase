@@ -1,3 +1,22 @@
+/**
+ * COMPONENT TYPE: Store
+ * SECTION: State Management
+ *
+ * ROLE:
+ * - Configure Redux Toolkit store with game slice
+ * - Add middleware for localStorage synchronization
+ * - Export typed RootState and AppDispatch for type-safe hooks
+ *
+ * PATTERNS USED:
+ * - Redux Toolkit - Centralized state management
+ * - Middleware Pattern - syncWithLocalStorage for cross-window sync
+ *
+ * NOTES FOR CONTRIBUTORS:
+ * - serializableCheck disabled to allow Set and Date in state
+ * - syncWithLocalStorage middleware dispatches storage events
+ * - Use useAppDispatch and useAppSelector hooks (in hooks.ts)
+ */
+
 import { configureStore } from '@reduxjs/toolkit';
 import gameReducer, { syncWithLocalStorage } from './gameSlice';
 
