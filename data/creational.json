@@ -1,0 +1,502 @@
+[
+  {
+    "id": "creational-01",
+    "title": "Pizzeria - Creazione impasti",
+    "category": "creational",
+    "code": "class PizzaDough {\n  constructor(type, hydration, salt) {\n    this.type = type;\n    this.hydration = hydration;\n    this.salt = salt;\n  }\n}\n\nfunction createDough(doughType) {\n  switch(doughType) {\n    case 'napoletana':\n      return new PizzaDough('00', 65, 2.5);\n    case 'romana':\n      return new PizzaDough('0', 70, 3);\n    case 'integrale':\n      return new PizzaDough('integrale', 68, 2.8);\n    default:\n      return new PizzaDough('00', 60, 2);\n  }\n}",
+    "solutionExplanation": "Il Factory Method è un pattern creazionale fondamentale che definisce un'interfaccia per la creazione di oggetti, delegando alle sottoclassi o alle funzioni factory la decisione su quale classe concreta istanziare. La funzione createDough incapsula completamente la logica di creazione degli impasti per pizza, nascondendo i dettagli tecnici (tipo di farina, idratazione, sale) dietro una semplice interfaccia basata sul nome della pizza desiderata. Questo approccio offre numerosi vantaggi: centralizza la logica di creazione in un unico punto, rende il codice client più pulito e comprensibile, facilita le modifiche future alle ricette senza toccare il codice che usa gli impasti, e permette di aggiungere nuovi tipi di impasto semplicemente estendendo lo switch. Il pattern migliora significativamente la manutenibilità e l'estendibilità del sistema.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-02",
+    "title": "Logger di sistema",
+    "category": "creational",
+    "code": "class Logger {\n  constructor() {\n    if (Logger.instance) {\n      return Logger.instance;\n    }\n    this.logs = [];\n    Logger.instance = this;\n  }\n\n  log(message) {\n    this.logs.push({ timestamp: Date.now(), message });\n  }\n\n  getLogs() {\n    return this.logs;\n  }\n}\n\nconst logger1 = new Logger();\nconst logger2 = new Logger();\nconsole.log(logger1 === logger2); // true",
+    "solutionExplanation": "Il pattern Singleton è un pattern creazionale che garantisce l'esistenza di una sola istanza di una classe nell'intera applicazione, fornendo un punto di accesso globale e controllato a tale istanza. Nel caso del Logger, ogni tentativo di creare una nuova istanza restituisce sempre lo stesso oggetto, assicurando che tutti i log vengano centralizzati in un'unica raccolta. Questo pattern risolve problemi critici in scenari come il logging: previene la creazione di multipli logger che potrebbero scrivere in file diversi o causare inconsistenze, garantisce che tutti i componenti dell'applicazione vedano gli stessi log, e risparmia memoria evitando istanze duplicate. Il controllo viene implementato nel costruttore, che verifica l'esistenza di Logger.instance e, se presente, la restituisce immediatamente invece di creare un nuovo oggetto. Questo garantisce coerenza e sincronizzazione in tutta l'applicazione.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-03",
+    "title": "Costruzione di un PC gaming",
+    "category": "creational",
+    "code": "class Computer {\n  constructor() {\n    this.cpu = null;\n    this.ram = null;\n    this.storage = null;\n    this.gpu = null;\n  }\n}\n\nclass PCConfigurator {\n  constructor() {\n    this.computer = new Computer();\n  }\n\n  setCPU(cpu) {\n    this.computer.cpu = cpu;\n    return this;\n  }\n\n  setRAM(ram) {\n    this.computer.ram = ram;\n    return this;\n  }\n\n  setStorage(storage) {\n    this.computer.storage = storage;\n    return this;\n  }\n\n  setGPU(gpu) {\n    this.computer.gpu = gpu;\n    return this;\n  }\n\n  build() {\n    return this.computer;\n  }\n}\n\nconst gaming = new PCConfigurator()\n  .setCPU('Intel i9')\n  .setRAM('32GB')\n  .setGPU('RTX 4090')\n  .setStorage('2TB SSD')\n  .build();",
+    "solutionExplanation": "Il Builder pattern separa il processo di costruzione di oggetti complessi dalla loro rappresentazione finale, permettendo di creare diverse configurazioni attraverso la stessa procedura di costruzione. PCConfigurator incapsula tutta la logica necessaria per assemblare un computer pezzo per pezzo, offrendo un'interfaccia fluida (ogni metodo ritorna this) che rende il codice estremamente leggibile e auto-documentante. Questo pattern risolve il problema dei costruttori con troppi parametri, evita errori nell'ordine dei parametri, e rende il codice più manutenibile permettendo l'aggiunta di nuove componenti senza modificare la logica esistente. Inoltre, consente validazioni intermedie e la creazione di configurazioni pre-definite (es. gaming, office, workstation).",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-04",
+    "title": "Clonazione documenti",
+    "category": "creational",
+    "code": "class Document {\n  constructor(title, content, metadata) {\n    this.title = title;\n    this.content = content;\n    this.metadata = metadata || {};\n  }\n\n  clone() {\n    return new Document(\n      this.title + ' (copia)',\n      this.content,\n      { ...this.metadata }\n    );\n  }\n}\n\nconst original = new Document(\n  'Relazione Q4',\n  'Contenuto molto lungo...',\n  { author: 'Mario', version: 1 }\n);\n\nconst copy = original.clone();\ncopy.metadata.version = 2;",
+    "solutionExplanation": "Il Prototype è un pattern creazionale che permette di creare nuovi oggetti duplicando istanze esistenti (prototipi) invece di costruirli da zero attraverso il costruttore. Il metodo clone() implementa questa duplicazione, creando una copia del documento che mantiene titolo, contenuto e metadati originali, ma rappresenta un oggetto completamente indipendente modificabile separatamente. Questo pattern è particolarmente vantaggioso quando la creazione di un oggetto è costosa in termini di risorse o tempo: invece di ricreare un documento complesso con tutte le sue proprietà, si duplica semplicemente uno esistente e si modificano solo i dettagli necessari. Il pattern migliora le performance evitando inizializzazioni ripetitive, semplifica il codice eliminando costruttori complessi, e facilita la creazione di varianti di oggetti esistenti mantenendo una base comune. Lo spread operator {...this.metadata} assicura che i metadati vengano copiati per valore, garantendo l'indipendenza tra originale e copia.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-05",
+    "title": "Sistema di notifiche multicanale",
+    "category": "creational",
+    "code": "class EmailNotification {\n  send(message) {\n    console.log(`Email: ${message}`);\n  }\n}\n\nclass SMSNotification {\n  send(message) {\n    console.log(`SMS: ${message}`);\n  }\n}\n\nclass PushNotification {\n  send(message) {\n    console.log(`Push: ${message}`);\n  }\n}\n\nclass NotificationCreator {\n  static create(type) {\n    switch(type) {\n      case 'email': return new EmailNotification();\n      case 'sms': return new SMSNotification();\n      case 'push': return new PushNotification();\n      default: throw new Error('Unknown type');\n    }\n  }\n}\n\nconst notifier = NotificationFactory.create('email');\nnotifier.send('Benvenuto!');",
+    "solutionExplanation": "Il Factory Method separa nettamente la logica di creazione degli oggetti dal loro utilizzo concreto, centralizzando tutte le decisioni su quale classe istanziare in un unico punto del sistema. NotificationManager incapsula la logica di selezione e istanziazione delle diverse tipologie di notifiche (email, SMS, push), analizzando il tipo richiesto e restituendo l'implementazione appropriata. Questo approccio offre vantaggi significativi: riduce drasticamente l'accoppiamento tra il codice client e le classi concrete, facilita l'estensione del sistema permettendo di aggiungere nuovi canali di notifica modificando solo il factory, semplifica i test permettendo di sostituire facilmente le implementazioni reali con mock, e centralizza la configurazione delle notifiche. Se domani si aggiungesse un canale Telegram, basterebbe estendere lo switch nel factory senza toccare il codice che utilizza le notifiche, migliorando enormemente la manutenibilità.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-06",
+    "title": "Configurazione applicazione",
+    "category": "creational",
+    "code": "class AppConfig {\n  constructor() {\n    if (AppConfig.instance) {\n      return AppConfig.instance;\n    }\n    this.settings = {\n      theme: 'light',\n      language: 'it',\n      apiUrl: 'https://api.example.com'\n    };\n    AppConfig.instance = this;\n  }\n\n  get(key) {\n    return this.settings[key];\n  }\n\n  set(key, value) {\n    this.settings[key] = value;\n  }\n}\n\nconst config = new AppConfig();\nconfig.set('theme', 'dark');\n\nconst config2 = new AppConfig();\nconsole.log(config2.get('theme')); // 'dark'",
+    "solutionExplanation": "Il pattern Singleton garantisce che una classe abbia una sola istanza globale accessibile da qualsiasi punto dell'applicazione, risolvendo il problema della gestione centralizzata dello stato condiviso. AppConfig implementa questo pattern per mantenere tutte le impostazioni dell'applicazione (tema, lingua, URL API) in un'unica istanza condivisa tra tutti i componenti. Questo approccio previene inconsistenze che potrebbero sorgere se diversi componenti mantenessero copie separate delle configurazioni: una modifica al tema in un punto si riflette immediatamente ovunque. Il pattern offre un punto di accesso globale e controllato alle configurazioni, elimina la necessità di passare la configurazione come parametro attraverso molteplici livelli di funzioni, garantisce sincronizzazione automatica, e semplifica la gestione dello stato applicativo. L'esempio dimostra che config2.get('theme') restituisce 'dark' anche se la modifica è stata fatta su config, confermando che entrambe le variabili referenziano la stessa istanza.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-07",
+    "title": "Costruzione menu ristorante",
+    "category": "creational",
+    "code": "class Menu {\n  constructor() {\n    this.appetizers = [];\n    this.mains = [];\n    this.desserts = [];\n    this.drinks = [];\n  }\n}\n\nclass MenuCreator {\n  constructor() {\n    this.menu = new Menu();\n  }\n\n  addAppetizer(item) {\n    this.menu.appetizers.push(item);\n    return this;\n  }\n\n  addMain(item) {\n    this.menu.mains.push(item);\n    return this;\n  }\n\n  addDessert(item) {\n    this.menu.desserts.push(item);\n    return this;\n  }\n\n  addDrink(item) {\n    this.menu.drinks.push(item);\n    return this;\n  }\n\n  getMenu() {\n    return this.menu;\n  }\n}\n\nconst lunchMenu = new MenuCreator()\n  .addAppetizer('Bruschetta')\n  .addMain('Carbonara')\n  .addDrink('Acqua')\n  .getMenu();",
+    "solutionExplanation": "Builder separa la costruzione di oggetti complessi dalla loro rappresentazione. MenuCreator permette di costruire menu personalizzati passo dopo passo, offrendo un'interfaccia fluida per aggiungere diversi elementi.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-08",
+    "title": "Gestione connessione database",
+    "category": "creational",
+    "code": "class DatabaseConnection {\n  constructor(config) {\n    if (DatabaseConnection.instance) {\n      return DatabaseConnection.instance;\n    }\n    this.config = config;\n    this.connected = false;\n    DatabaseConnection.instance = this;\n  }\n\n  connect() {\n    if (!this.connected) {\n      console.log('Connecting to', this.config.host);\n      this.connected = true;\n    }\n  }\n\n  query(sql) {\n    if (this.connected) {\n      console.log('Executing:', sql);\n    }\n  }\n}\n\nconst db1 = new DatabaseConnection({ host: 'localhost', port: 5432 });\nconst db2 = new DatabaseConnection({ host: 'other', port: 3306 });\nconsole.log(db1 === db2); // true",
+    "solutionExplanation": "Singleton garantisce una sola istanza della classe. DatabaseConnection assicura che ci sia una sola connessione al database, evitando sprechi di risorse e garantendo coerenza nelle operazioni.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-09",
+    "title": "Creazione veicoli in concessionaria",
+    "category": "creational",
+    "code": "class Car {\n  constructor(model, engine) {\n    this.type = 'car';\n    this.model = model;\n    this.engine = engine;\n  }\n}\n\nclass Motorcycle {\n  constructor(model, engine) {\n    this.type = 'motorcycle';\n    this.model = model;\n    this.engine = engine;\n  }\n}\n\nclass VehicleCreator {\n  createVehicle(type, model, engine) {\n    if (type === 'car') {\n      return new Car(model, engine);\n    } else if (type === 'motorcycle') {\n      return new Motorcycle(model, engine);\n    }\n    throw new Error('Tipo veicolo sconosciuto');\n  }\n}\n\nconst factory = new VehicleFactory();\nconst myCar = factory.createVehicle('car', 'Sedan', '2.0L');",
+    "solutionExplanation": "Factory Method incapsula la logica di istanziazione degli oggetti, permettendo al codice client di richiedere oggetti senza conoscere le classi concrete. VehicleManufacturer centralizza la creazione dei veicoli basandosi sul tipo richiesto. Se in futuro si aggiungessero nuove categorie di veicoli (es. truck, van), basterebbe estendere questo metodo senza modificare il codice che utilizza i veicoli. Questo riduce l'accoppiamento e rende il sistema più estendibile e manutenibile.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-10",
+    "title": "Clonazione configurazioni server",
+    "category": "creational",
+    "code": "class ServerConfig {\n  constructor(name, cpu, ram, storage) {\n    this.name = name;\n    this.cpu = cpu;\n    this.ram = ram;\n    this.storage = storage;\n  }\n\n  clone() {\n    return new ServerConfig(\n      this.name + '-clone',\n      this.cpu,\n      this.ram,\n      this.storage\n    );\n  }\n}\n\nconst prodServer = new ServerConfig('prod-01', 8, 32, 500);\nconst testServer = prodServer.clone();\ntestServer.name = 'test-01';\ntestServer.ram = 16;",
+    "solutionExplanation": "Prototype permette di creare nuovi oggetti clonando istanze esistenti. ServerConfig usa clone() per duplicare configurazioni server, permettendo di creare rapidamente ambienti simili con piccole variazioni.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-11",
+    "title": "Costruzione email HTML",
+    "category": "creational",
+    "code": "class Email {\n  constructor() {\n    this.to = [];\n    this.subject = '';\n    this.body = '';\n    this.attachments = [];\n  }\n}\n\nclass EmailComposer {\n  constructor() {\n    this.email = new Email();\n  }\n\n  setRecipients(to) {\n    this.email.to = to;\n    return this;\n  }\n\n  setSubject(subject) {\n    this.email.subject = subject;\n    return this;\n  }\n\n  setBody(body) {\n    this.email.body = body;\n    return this;\n  }\n\n  addAttachment(file) {\n    this.email.attachments.push(file);\n    return this;\n  }\n\n  compose() {\n    return this.email;\n  }\n}\n\nconst email = new EmailComposer()\n  .setRecipients(['user@example.com'])\n  .setSubject('Benvenuto')\n  .setBody('Grazie per esserti iscritto')\n  .compose();",
+    "solutionExplanation": "Builder permette di costruire oggetti complessi attraverso una serie di passaggi incrementali, separando la logica di costruzione dalla rappresentazione finale dell'oggetto. EmailDraft offre metodi specifici per impostare ogni componente dell'email (destinatari, oggetto, corpo, allegati), rendendo il codice molto leggibile. Il pattern del 'fluent interface' (ogni metodo ritorna this) permette di concatenare le chiamate. Questo approccio è particolarmente utile quando un oggetto ha molti parametri opzionali o quando l'ordine di inizializzazione è rilevante.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-12",
+    "title": "Sistema di autenticazione UI",
+    "category": "creational",
+    "code": "class LoginButton {\n  render() { return '<button>Login</button>'; }\n}\n\nclass DarkLoginButton {\n  render() { return '<button class=\"dark\">Login</button>'; }\n}\n\nclass Checkbox {\n  render() { return '<input type=\"checkbox\">'; }\n}\n\nclass DarkCheckbox {\n  render() { return '<input type=\"checkbox\" class=\"dark\">'; }\n}\n\nclass UICreator {\n  createButton() {}\n  createCheckbox() {}\n}\n\nclass LightUICreator extends UIFactory {\n  createButton() { return new LoginButton(); }\n  createCheckbox() { return new Checkbox(); }\n}\n\nclass DarkUICreator extends UIFactory {\n  createButton() { return new DarkLoginButton(); }\n  createCheckbox() { return new DarkCheckbox(); }\n}\n\nconst factory = new DarkUIFactory();\nconst btn = factory.createButton();",
+    "solutionExplanation": "Abstract Factory fornisce un'interfaccia unificata per creare famiglie complete di oggetti correlati, garantendo che gli oggetti creati siano compatibili tra loro. ThemeComponents definisce i metodi astratti per creare i vari componenti UI, mentre LightTheme e DarkTheme forniscono implementazioni concrete che assicurano coerenza stilistica. Quando si cambia tema, tutti i componenti vengono creati dalla stessa famiglia, evitando inconsistenze visive. Questo pattern è fondamentale quando si lavora con sistemi che devono supportare diverse varianti di un insieme di prodotti correlati.",
+    "solutionPatterns": [
+      "Abstract Factory"
+    ]
+  },
+  {
+    "id": "creational-13",
+    "title": "Cache di sistema",
+    "category": "creational",
+    "code": "class Cache {\n  constructor() {\n    if (Cache.instance) {\n      return Cache.instance;\n    }\n    this.data = new Map();\n    Cache.instance = this;\n  }\n\n  set(key, value) {\n    this.data.set(key, value);\n  }\n\n  get(key) {\n    return this.data.get(key);\n  }\n\n  clear() {\n    this.data.clear();\n  }\n}\n\nconst cache1 = new Cache();\ncache1.set('user:1', { name: 'Mario' });\n\nconst cache2 = new Cache();\nconsole.log(cache2.get('user:1')); // { name: 'Mario' }",
+    "solutionExplanation": "Singleton assicura che esista una sola istanza condivisa. Cache implementa questo pattern per garantire che tutti i componenti dell'applicazione accedano alla stessa area di memoria, evitando duplicazioni e inconsistenze.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-14",
+    "title": "Creazione personaggi RPG",
+    "category": "creational",
+    "code": "class Character {\n  constructor(name) {\n    this.name = name;\n    this.level = 1;\n    this.skills = [];\n    this.equipment = [];\n  }\n}\n\nclass CharacterAssembler {\n  constructor(name) {\n    this.character = new Character(name);\n  }\n\n  setLevel(level) {\n    this.character.level = level;\n    return this;\n  }\n\n  addSkill(skill) {\n    this.character.skills.push(skill);\n    return this;\n  }\n\n  addEquipment(item) {\n    this.character.equipment.push(item);\n    return this;\n  }\n\n  create() {\n    return this.character;\n  }\n}\n\nconst warrior = new CharacterBuilder('Conan')\n  .setLevel(10)\n  .addSkill('Sword Mastery')\n  .addSkill('Shield Block')\n  .addEquipment('Iron Sword')\n  .create();",
+    "solutionExplanation": "Builder gestisce la creazione di oggetti con molte proprietà configurabili, offrendo un'interfaccia chiara e metodica. CharacterSheet permette di definire gradualmente le caratteristiche del personaggio: livello, abilità ed equipaggiamento. Ogni metodo aggiunge o modifica un aspetto specifico e ritorna l'oggetto stesso, permettendo il chaining. Il metodo finale create() restituisce il personaggio completo. Questo pattern evita costruttori con lunghe liste di parametri e rende il codice auto-documentante.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-15",
+    "title": "Produzione mobili su misura",
+    "category": "creational",
+    "code": "class ModernChair {\n  sit() { return 'Seduto su sedia moderna'; }\n}\n\nclass VictorianChair {\n  sit() { return 'Seduto su sedia vittoriana'; }\n}\n\nclass ModernTable {\n  use() { return 'Tavolo moderno'; }\n}\n\nclass VictorianTable {\n  use() { return 'Tavolo vittoriano'; }\n}\n\nclass FurnitureCollection {\n  createChair() {}\n  createTable() {}\n}\n\nclass ModernCollection extends FurnitureCollection {\n  createChair() { return new ModernChair(); }\n  createTable() { return new ModernTable(); }\n}\n\nclass VictorianCollection extends FurnitureCollection {\n  createChair() { return new VictorianChair(); }\n  createTable() { return new VictorianTable(); }\n}\n\nconst collection = new ModernCollection();\nconst chair = collection.createChair();\nconst table = collection.createTable();",
+    "solutionExplanation": "Abstract Factory garantisce che oggetti di una stessa famiglia vengano creati in modo coerente. FurnitureCollection definisce i metodi per creare diversi tipi di mobili, mentre ModernCollection e VictorianCollection implementano questi metodi restituendo mobili dello stile appropriato. Questo assicura che, quando si sceglie uno stile, tutti i mobili creati appartengano alla stessa famiglia estetica. Il pattern previene errori come combinare una sedia moderna con un tavolo vittoriano, mantenendo l'integrità stilistica dell'arredamento.",
+    "solutionPatterns": [
+      "Abstract Factory"
+    ]
+  },
+  {
+    "id": "creational-16",
+    "title": "Sistema di prenotazione hotel",
+    "category": "creational",
+    "code": "class Room {\n  constructor(number, type, price) {\n    this.number = number;\n    this.type = type;\n    this.price = price;\n  }\n\n  clone() {\n    return new Room(this.number + 100, this.type, this.price);\n  }\n}\n\nconst standardRoom = new Room(101, 'Standard', 80);\nconst room102 = standardRoom.clone();\nconst room103 = standardRoom.clone();",
+    "solutionExplanation": "Prototype permette di duplicare rapidamente oggetti simili. In un sistema di prenotazione hotel, le stanze dello stesso tipo condividono caratteristiche comuni (tipo, prezzo). Clonando un prototipo si evita di reinserire manualmente tutti i dati per ogni stanza, migliorando efficienza e riducendo errori.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-17",
+    "title": "Generatore query SQL",
+    "category": "creational",
+    "code": "class SQLQuery {\n  constructor() {\n    this.select = [];\n    this.from = '';\n    this.where = [];\n    this.orderBy = '';\n  }\n}\n\nclass QueryComposer {\n  constructor() {\n    this.query = new SQLQuery();\n  }\n\n  selectFields(...fields) {\n    this.query.select = fields;\n    return this;\n  }\n\n  fromTable(table) {\n    this.query.from = table;\n    return this;\n  }\n\n  whereCondition(condition) {\n    this.query.where.push(condition);\n    return this;\n  }\n\n  orderByField(field) {\n    this.query.orderBy = field;\n    return this;\n  }\n\n  build() {\n    return `SELECT ${this.query.select.join(', ')} FROM ${this.query.from} WHERE ${this.query.where.join(' AND ')} ORDER BY ${this.query.orderBy}`;\n  }\n}\n\nconst query = new QueryComposer()\n  .selectFields('id', 'name')\n  .fromTable('users')\n  .whereCondition('active = true')\n  .orderByField('name')\n  .build();",
+    "solutionExplanation": "Builder semplifica la costruzione di query SQL complesse attraverso un'interfaccia fluida e leggibile. QueryComposer permette di comporre query passo dopo passo, validando ogni componente e garantendo sintassi corretta. Questo pattern evita errori di concatenazione stringhe, rende il codice auto-documentante e facilita la manutenzione.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-18",
+    "title": "Pool di connessioni",
+    "category": "creational",
+    "code": "class ConnectionPool {\n  constructor() {\n    if (ConnectionPool.instance) {\n      return ConnectionPool.instance;\n    }\n    this.connections = [];\n    this.maxSize = 10;\n    ConnectionPool.instance = this;\n  }\n\n  getConnection() {\n    if (this.connections.length < this.maxSize) {\n      this.connections.push({ id: this.connections.length + 1, inUse: true });\n      return this.connections[this.connections.length - 1];\n    }\n    return this.connections.find(c => !c.inUse);\n  }\n\n  releaseConnection(conn) {\n    conn.inUse = false;\n  }\n}\n\nconst pool1 = new ConnectionPool();\nconst pool2 = new ConnectionPool();\nconsole.log(pool1 === pool2); // true",
+    "solutionExplanation": "Singleton garantisce un unico pool di connessioni condiviso dall'intera applicazione. ConnectionPool gestisce efficientemente le connessioni al database, riutilizzandole invece di crearne di nuove. Questo pattern riduce drasticamente l'overhead di creazione connessioni, previene esaurimento risorse e migliora le performance complessive del sistema.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-19",
+    "title": "Creazione token sicuri",
+    "category": "creational",
+    "code": "class Token {\n  constructor(type, expiry) {\n    this.type = type;\n    this.expiry = expiry;\n    this.value = this.generate();\n  }\n\n  generate() {\n    return Math.random().toString(36).substring(2);\n  }\n}\n\nfunction createToken(tokenType) {\n  switch(tokenType) {\n    case 'access':\n      return new Token('access', 3600);\n    case 'refresh':\n      return new Token('refresh', 86400);\n    case 'api':\n      return new Token('api', 31536000);\n    default:\n      return new Token('temp', 300);\n  }\n}\n\nconst accessToken = createToken('access');\nconst refreshToken = createToken('refresh');",
+    "solutionExplanation": "Factory Method centralizza la creazione di diversi tipi di token con parametri specifici (durata, tipo). La funzione createToken nasconde la complessità della configurazione dei token, garantendo che ogni tipo abbia le giuste caratteristiche di sicurezza e scadenza. Questo migliora la sicurezza e la manutenibilità del sistema di autenticazione.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-20",
+    "title": "Builder HTTP Request",
+    "category": "creational",
+    "code": "class HttpRequest {\n  constructor() {\n    this.url = '';\n    this.method = 'GET';\n    this.headers = {};\n    this.body = null;\n  }\n}\n\nclass RequestComposer {\n  constructor() {\n    this.request = new HttpRequest();\n  }\n\n  setUrl(url) {\n    this.request.url = url;\n    return this;\n  }\n\n  setMethod(method) {\n    this.request.method = method;\n    return this;\n  }\n\n  addHeader(key, value) {\n    this.request.headers[key] = value;\n    return this;\n  }\n\n  setBody(body) {\n    this.request.body = JSON.stringify(body);\n    return this;\n  }\n\n  build() {\n    return this.request;\n  }\n}\n\nconst request = new RequestComposer()\n  .setUrl('/api/users')\n  .setMethod('POST')\n  .addHeader('Content-Type', 'application/json')\n  .setBody({ name: 'Mario' })\n  .build();",
+    "solutionExplanation": "Builder pattern costruisce richieste HTTP complesse in modo incrementale e leggibile. RequestComposer permette di specificare URL, metodo, headers e body attraverso chiamate fluenti, validando ogni componente e assicurando che la richiesta sia ben formata prima dell'invio.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-21",
+    "title": "Tema UI dinamico",
+    "category": "creational",
+    "code": "class LightButton {\n  render() { return '<button class=\"light\">Click</button>'; }\n}\n\nclass DarkButton {\n  render() { return '<button class=\"dark\">Click</button>'; }\n}\n\nclass LightInput {\n  render() { return '<input class=\"light\">'; }\n}\n\nclass DarkInput {\n  render() { return '<input class=\"dark\">'; }\n}\n\nclass ThemeKit {\n  createButton() {}\n  createInput() {}\n}\n\nclass LightThemeKit extends ThemeKit {\n  createButton() { return new LightButton(); }\n  createInput() { return new LightInput(); }\n}\n\nclass DarkThemeKit extends ThemeKit {\n  createButton() { return new DarkButton(); }\n  createInput() { return new DarkInput(); }\n}\n\nconst theme = new DarkThemeKit();\nconst btn = theme.createButton();\nconst input = theme.createInput();",
+    "solutionExplanation": "Abstract Factory crea famiglie coerenti di componenti UI per temi diversi. ThemeKit garantisce che tutti i componenti (bottoni, input) appartengano allo stesso tema visivo, prevenendo mix inconsistenti come bottoni dark con input light. Facilita il cambio tema globale e mantiene coerenza visiva.",
+    "solutionPatterns": [
+      "Abstract Factory"
+    ]
+  },
+  {
+    "id": "creational-22",
+    "title": "Cache registro eventi",
+    "category": "creational",
+    "code": "class EventRegistry {\n  constructor() {\n    if (EventRegistry.instance) {\n      return EventRegistry.instance;\n    }\n    this.events = [];\n    EventRegistry.instance = this;\n  }\n\n  record(event) {\n    this.events.push({ ...event, timestamp: Date.now() });\n  }\n\n  getEvents() {\n    return this.events;\n  }\n\n  clear() {\n    this.events = [];\n  }\n}\n\nconst registry1 = new EventRegistry();\nregistry1.record({ type: 'click', target: 'button' });\nconst registry2 = new EventRegistry();\nconsole.log(registry2.getEvents().length); // 1",
+    "solutionExplanation": "Singleton garantisce un registro eventi centralizzato accessibile da tutta l'applicazione. EventRegistry mantiene uno storico unificato di tutti gli eventi, facilitando debug, analytics e audit trail. L'istanza unica previene frammentazione dei dati e garantisce consistenza.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-23",
+    "title": "Creazione prodotti e-commerce",
+    "category": "creational",
+    "code": "class Product {\n  constructor(name, price, category) {\n    this.name = name;\n    this.price = price;\n    this.category = category;\n  }\n}\n\nfunction createProduct(category, name, price) {\n  switch(category) {\n    case 'electronics':\n      return new Product(name, price, 'Electronics');\n    case 'clothing':\n      return new Product(name, price, 'Abbigliamento');\n    case 'food':\n      return new Product(name, price, 'Alimentari');\n    default:\n      return new Product(name, price, 'Generale');\n  }\n}\n\nconst laptop = createProduct('electronics', 'Laptop Dell', 899);\nconst shirt = createProduct('clothing', 'T-Shirt', 29);",
+    "solutionExplanation": "Factory Method standardizza la creazione di prodotti per diverse categorie, assicurando nomenclatura coerente e validazione. Centralizzando la logica di creazione, facilita l'aggiunta di nuove categorie e garantisce che tutti i prodotti seguano le stesse convenzioni.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-24",
+    "title": "Costruttore report PDF",
+    "category": "creational",
+    "code": "class Report {\n  constructor() {\n    this.title = '';\n    this.author = '';\n    this.sections = [];\n    this.footer = '';\n  }\n}\n\nclass ReportComposer {\n  constructor() {\n    this.report = new Report();\n  }\n\n  setTitle(title) {\n    this.report.title = title;\n    return this;\n  }\n\n  setAuthor(author) {\n    this.report.author = author;\n    return this;\n  }\n\n  addSection(section) {\n    this.report.sections.push(section);\n    return this;\n  }\n\n  setFooter(footer) {\n    this.report.footer = footer;\n    return this;\n  }\n\n  generate() {\n    return this.report;\n  }\n}\n\nconst report = new ReportComposer()\n  .setTitle('Report Q4 2024')\n  .setAuthor('Mario Rossi')\n  .addSection('Introduzione')\n  .addSection('Analisi')\n  .setFooter('Confidenziale')\n  .generate();",
+    "solutionExplanation": "Builder semplifica la creazione di report complessi con molteplici sezioni e metadati. ReportComposer offre un'interfaccia fluida per comporre il documento gradualmente, validando ogni componente e garantendo che il report finale sia completo e ben strutturato.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-25",
+    "title": "Template messaggi",
+    "category": "creational",
+    "code": "class Message {\n  constructor(subject, body, from) {\n    this.subject = subject;\n    this.body = body;\n    this.from = from;\n    this.timestamp = Date.now();\n  }\n\n  clone() {\n    return new Message(this.subject, this.body, this.from);\n  }\n}\n\nconst welcomeTemplate = new Message(\n  'Benvenuto!',\n  'Grazie per esserti iscritto al nostro servizio.',\n  'noreply@example.com'\n);\n\nconst msg1 = welcomeTemplate.clone();\nconst msg2 = welcomeTemplate.clone();",
+    "solutionExplanation": "Prototype permette di duplicare template di messaggi predefiniti, evitando di ricreare ogni volta soggetto, corpo e mittente. Questo pattern migliora efficienza nella gestione di comunicazioni massive mantenendo consistenza nei messaggi automatici.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-26",
+    "title": "Sessione utente globale",
+    "category": "creational",
+    "code": "class UserSession {\n  constructor() {\n    if (UserSession.instance) {\n      return UserSession.instance;\n    }\n    this.user = null;\n    this.token = null;\n    this.expiresAt = null;\n    UserSession.instance = this;\n  }\n\n  login(user, token) {\n    this.user = user;\n    this.token = token;\n    this.expiresAt = Date.now() + 3600000;\n  }\n\n  logout() {\n    this.user = null;\n    this.token = null;\n    this.expiresAt = null;\n  }\n\n  isAuthenticated() {\n    return this.token && Date.now() < this.expiresAt;\n  }\n}\n\nconst session1 = new UserSession();\nsession1.login({ id: 1, name: 'Mario' }, 'abc123');\nconst session2 = new UserSession();\nconsole.log(session2.isAuthenticated()); // true",
+    "solutionExplanation": "Singleton mantiene una sessione utente unica per tutta l'applicazione. UserSession centralizza lo stato di autenticazione, garantendo che tutti i componenti vedano lo stesso utente loggato e previene inconsistenze. Semplifica la gestione della sessione e migliora la sicurezza.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-27",
+    "title": "Validatore di form",
+    "category": "creational",
+    "code": "class Validator {\n  constructor(type) {\n    this.type = type;\n  }\n\n  validate(value) {}\n}\n\nclass EmailValidator extends Validator {\n  validate(value) {\n    return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);\n  }\n}\n\nclass PhoneValidator extends Validator {\n  validate(value) {\n    return /^\\d{10}$/.test(value);\n  }\n}\n\nfunction createValidator(type) {\n  switch(type) {\n    case 'email':\n      return new EmailValidator(type);\n    case 'phone':\n      return new PhoneValidator(type);\n    default:\n      return new Validator(type);\n  }\n}\n\nconst emailVal = createValidator('email');\nconsole.log(emailVal.validate('test@example.com'));",
+    "solutionExplanation": "Factory Method crea validatori specifici per diversi tipi di input. La funzione createValidator incapsula la logica di scelta del validatore appropriato, facilitando l'aggiunta di nuovi tipi di validazione senza modificare il codice client.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-28",
+    "title": "Costruttore form dinamici",
+    "category": "creational",
+    "code": "class Form {\n  constructor() {\n    this.fields = [];\n    this.title = '';\n    this.submitUrl = '';\n  }\n}\n\nclass FormGenerator {\n  constructor() {\n    this.form = new Form();\n  }\n\n  setTitle(title) {\n    this.form.title = title;\n    return this;\n  }\n\n  addField(type, name, label) {\n    this.form.fields.push({ type, name, label });\n    return this;\n  }\n\n  setSubmitUrl(url) {\n    this.form.submitUrl = url;\n    return this;\n  }\n\n  create() {\n    return this.form;\n  }\n}\n\nconst form = new FormGenerator()\n  .setTitle('Registrazione')\n  .addField('text', 'name', 'Nome')\n  .addField('email', 'email', 'Email')\n  .setSubmitUrl('/api/register')\n  .create();",
+    "solutionExplanation": "Builder permette di creare form complessi con campi dinamici attraverso un'interfaccia fluida. FormGenerator compone il form campo per campo, validando ogni aggiunta e assicurando che la struttura finale sia coerente e completa.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-29",
+    "title": "Duplicazione progetti",
+    "category": "creational",
+    "code": "class Project {\n  constructor(name, settings) {\n    this.name = name;\n    this.settings = settings || {};\n    this.tasks = [];\n  }\n\n  clone() {\n    const cloned = new Project(this.name + ' (copia)', { ...this.settings });\n    cloned.tasks = [...this.tasks];\n    return cloned;\n  }\n\n  addTask(task) {\n    this.tasks.push(task);\n  }\n}\n\nconst template = new Project('Template Base', { theme: 'light' });\ntemplate.addTask('Setup');\ntemplate.addTask('Development');\n\nconst project1 = template.clone();\nproject1.name = 'Progetto Cliente A';",
+    "solutionExplanation": "Prototype permette di duplicare progetti completi con tutte le configurazioni e task predefiniti. Questo pattern accelera la creazione di nuovi progetti partendo da template collaudati, garantendo consistenza e riducendo errori di setup.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-30",
+    "title": "Registro metriche applicazione",
+    "category": "creational",
+    "code": "class Metrics {\n  constructor() {\n    if (Metrics.instance) {\n      return Metrics.instance;\n    }\n    this.counters = {};\n    this.gauges = {};\n    Metrics.instance = this;\n  }\n\n  incrementCounter(name) {\n    this.counters[name] = (this.counters[name] || 0) + 1;\n  }\n\n  setGauge(name, value) {\n    this.gauges[name] = value;\n  }\n\n  getMetrics() {\n    return { counters: this.counters, gauges: this.gauges };\n  }\n}\n\nconst metrics1 = new Metrics();\nmetrics1.incrementCounter('requests');\nconst metrics2 = new Metrics();\nconsole.log(metrics2.getMetrics()); // { counters: { requests: 1 }, gauges: {} }",
+    "solutionExplanation": "Singleton centralizza la raccolta di metriche applicative. Metrics mantiene un registro unico e condiviso di contatori e gauge, facilitando monitoring, debugging e analytics. L'istanza unica garantisce aggregazione corretta e vista coerente delle statistiche.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-31",
+    "title": "Creazione middleware Express",
+    "category": "creational",
+    "code": "class Middleware {\n  constructor(name) {\n    this.name = name;\n  }\n\n  handle(req, res, next) {}\n}\n\nclass AuthMiddleware extends Middleware {\n  handle(req, res, next) {\n    if (req.headers.authorization) {\n      next();\n    } else {\n      res.status(401).send('Unauthorized');\n    }\n  }\n}\n\nclass LogMiddleware extends Middleware {\n  handle(req, res, next) {\n    console.log(`${req.method} ${req.url}`);\n    next();\n  }\n}\n\nfunction createMiddleware(type) {\n  switch(type) {\n    case 'auth':\n      return new AuthMiddleware(type);\n    case 'log':\n      return new LogMiddleware(type);\n    default:\n      return new Middleware(type);\n  }\n}\n\nconst authMw = createMiddleware('auth');\nconst logMw = createMiddleware('log');",
+    "solutionExplanation": "Factory Method standardizza la creazione di middleware per Express, incapsulando la logica di istanziazione. Questo pattern facilita l'aggiunta di nuovi tipi di middleware e garantisce configurazione coerente attraverso l'applicazione.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-32",
+    "title": "Builder API client",
+    "category": "creational",
+    "code": "class APIConfig {\n  constructor() {\n    this.baseURL = '';\n    this.timeout = 5000;\n    this.headers = {};\n    this.interceptors = [];\n  }\n}\n\nclass APIClientSetup {\n  constructor() {\n    this.config = new APIConfig();\n  }\n\n  setBaseURL(url) {\n    this.config.baseURL = url;\n    return this;\n  }\n\n  setTimeout(ms) {\n    this.config.timeout = ms;\n    return this;\n  }\n\n  addHeader(key, value) {\n    this.config.headers[key] = value;\n    return this;\n  }\n\n  addInterceptor(fn) {\n    this.config.interceptors.push(fn);\n    return this;\n  }\n\n  build() {\n    return this.config;\n  }\n}\n\nconst apiConfig = new APIClientSetup()\n  .setBaseURL('https://api.example.com')\n  .setTimeout(10000)\n  .addHeader('Authorization', 'Bearer token')\n  .build();",
+    "solutionExplanation": "Builder pattern costruisce configurazioni API client complesse con timeout, headers e interceptors. APIClientSetup offre un'interfaccia fluida che rende la configurazione leggibile e manutenibile, validando ogni parametro prima della creazione del client.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-33",
+    "title": "Template risposte API",
+    "category": "creational",
+    "code": "class APIResponse {\n  constructor(status, message, data) {\n    this.status = status;\n    this.message = message;\n    this.data = data;\n    this.timestamp = new Date().toISOString();\n  }\n\n  clone() {\n    return new APIResponse(this.status, this.message, this.data);\n  }\n}\n\nconst successTemplate = new APIResponse(200, 'Success', null);\nconst errorTemplate = new APIResponse(500, 'Error', null);\n\nconst response1 = successTemplate.clone();\nresponse1.data = { id: 1, name: 'Test' };\n\nconst response2 = errorTemplate.clone();\nresponse2.message = 'Database error';",
+    "solutionExplanation": "Prototype crea risposte API standardizzate clonando template predefiniti. Questo garantisce formato consistente delle risposte, timestamp corretti e riduce boilerplate code, migliorando manutenibilità e esperienza sviluppatore.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-34",
+    "title": "Router applicazione singleton",
+    "category": "creational",
+    "code": "class Router {\n  constructor() {\n    if (Router.instance) {\n      return Router.instance;\n    }\n    this.routes = new Map();\n    this.currentRoute = '/';\n    Router.instance = this;\n  }\n\n  addRoute(path, handler) {\n    this.routes.set(path, handler);\n  }\n\n  navigate(path) {\n    this.currentRoute = path;\n    const handler = this.routes.get(path);\n    if (handler) handler();\n  }\n\n  getCurrentRoute() {\n    return this.currentRoute;\n  }\n}\n\nconst router1 = new Router();\nrouter1.addRoute('/home', () => console.log('Home'));\nconst router2 = new Router();\nconsole.log(router1 === router2); // true",
+    "solutionExplanation": "Singleton garantisce un'unica istanza del router per l'intera SPA. Router mantiene stato di navigazione centralizzato, routes registrate e history condivisi. Questo previene conflitti di routing e garantisce comportamento consistente della navigazione.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-35",
+    "title": "Creazione componenti React",
+    "category": "creational",
+    "code": "class Component {\n  constructor(props) {\n    this.props = props;\n  }\n\n  render() {}\n}\n\nclass Button extends Component {\n  render() {\n    return `<button>${this.props.text}</button>`;\n  }\n}\n\nclass Card extends Component {\n  render() {\n    return `<div class=\"card\">${this.props.content}</div>`;\n  }\n}\n\nfunction createComponent(type, props) {\n  switch(type) {\n    case 'button':\n      return new Button(props);\n    case 'card':\n      return new Card(props);\n    default:\n      return new Component(props);\n  }\n}\n\nconst btn = createComponent('button', { text: 'Click me' });\nconst card = createComponent('card', { content: 'Hello' });",
+    "solutionExplanation": "Factory Method crea componenti React/UI in modo dinamico basandosi sul tipo. Questo pattern facilita rendering dinamico, supporta lazy loading di componenti e permette di estendere facilmente la libreria di componenti disponibili.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-36",
+    "title": "Wizard multi-step",
+    "category": "creational",
+    "code": "class Wizard {\n  constructor() {\n    this.steps = [];\n    this.title = '';\n    this.onComplete = null;\n  }\n}\n\nclass WizardSetup {\n  constructor() {\n    this.wizard = new Wizard();\n  }\n\n  setTitle(title) {\n    this.wizard.title = title;\n    return this;\n  }\n\n  addStep(step) {\n    this.wizard.steps.push(step);\n    return this;\n  }\n\n  onComplete(callback) {\n    this.wizard.onComplete = callback;\n    return this;\n  }\n\n  create() {\n    return this.wizard;\n  }\n}\n\nconst wizard = new WizardSetup()\n  .setTitle('Setup Account')\n  .addStep({ title: 'Personal Info', fields: ['name', 'email'] })\n  .addStep({ title: 'Preferences', fields: ['theme', 'language'] })\n  .onComplete(() => console.log('Done'))\n  .create();",
+    "solutionExplanation": "Builder costruisce wizard complessi con step multipli e callback. WizardSetup permette di definire ogni fase del processo attraverso un'interfaccia fluida, garantendo che tutti i passi necessari siano configurati prima dell'utilizzo.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-37",
+    "title": "Gestione stato Redux",
+    "category": "creational",
+    "code": "class Store {\n  constructor() {\n    if (Store.instance) {\n      return Store.instance;\n    }\n    this.state = {};\n    this.listeners = [];\n    Store.instance = this;\n  }\n\n  getState() {\n    return this.state;\n  }\n\n  dispatch(action) {\n    this.state = this.reduce(this.state, action);\n    this.listeners.forEach(listener => listener());\n  }\n\n  subscribe(listener) {\n    this.listeners.push(listener);\n  }\n\n  reduce(state, action) {\n    return state;\n  }\n}\n\nconst store1 = new Store();\nconst store2 = new Store();\nconsole.log(store1 === store2); // true",
+    "solutionExplanation": "Singleton garantisce un unico store Redux per l'applicazione. Store mantiene lo stato globale centralizzato e coordina tutti i dispatch e subscription. Questo pattern è fondamentale per Redux, garantendo single source of truth e prevedibilità dello stato.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-38",
+    "title": "Template email transazionali",
+    "category": "creational",
+    "code": "class EmailTemplate {\n  constructor(subject, body, from, to) {\n    this.subject = subject;\n    this.body = body;\n    this.from = from;\n    this.to = to;\n  }\n\n  clone() {\n    return new EmailTemplate(this.subject, this.body, this.from, this.to);\n  }\n\n  customize(to, vars) {\n    const email = this.clone();\n    email.to = to;\n    email.body = this.body.replace(/{{(\\w+)}}/g, (match, key) => vars[key] || match);\n    return email;\n  }\n}\n\nconst orderConfirmTemplate = new EmailTemplate(\n  'Conferma Ordine',\n  'Ciao {{name}}, il tuo ordine {{orderId}} è confermato!',\n  'orders@shop.com',\n  ''\n);\n\nconst email1 = orderConfirmTemplate.customize('user@example.com', { name: 'Mario', orderId: '12345' });",
+    "solutionExplanation": "Prototype crea email personalizzate da template predefiniti. Questo pattern permette di mantenere template centrali per email transazionali, personalizzarli per ogni destinatario e garantire branding consistente in tutte le comunicazioni.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-39",
+    "title": "Factory pattern strategico",
+    "category": "creational",
+    "code": "class PaymentProcessor {\n  process(amount) {}\n}\n\nclass StripeProcessor extends PaymentProcessor {\n  process(amount) {\n    return `Stripe: Processing €${amount}`;\n  }\n}\n\nclass PayPalProcessor extends PaymentProcessor {\n  process(amount) {\n    return `PayPal: Processing €${amount}`;\n  }\n}\n\nfunction createPaymentProcessor(type, region) {\n  if (region === 'EU') {\n    return type === 'stripe' ? new StripeProcessor() : new PayPalProcessor();\n  }\n  return new PayPalProcessor();\n}\n\nconst processor = createPaymentProcessor('stripe', 'EU');",
+    "solutionExplanation": "Factory Method con logica condizionale crea processori di pagamento appropriati in base a tipo e regione. Questo centralizza decisioni di routing dei pagamenti, facilita compliance regionale e permette A/B testing di provider diversi.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-40",
+    "title": "Costruttore pipeline CI/CD",
+    "category": "creational",
+    "code": "class Pipeline {\n  constructor() {\n    this.stages = [];\n    this.name = '';\n    this.triggers = [];\n  }\n}\n\nclass PipelineSetup {\n  constructor() {\n    this.pipeline = new Pipeline();\n  }\n\n  setName(name) {\n    this.pipeline.name = name;\n    return this;\n  }\n\n  addStage(stage) {\n    this.pipeline.stages.push(stage);\n    return this;\n  }\n\n  addTrigger(trigger) {\n    this.pipeline.triggers.push(trigger);\n    return this;\n  }\n\n  build() {\n    return this.pipeline;\n  }\n}\n\nconst pipeline = new PipelineSetup()\n  .setName('Deploy Production')\n  .addStage({ name: 'build', script: 'npm run build' })\n  .addStage({ name: 'test', script: 'npm test' })\n  .addStage({ name: 'deploy', script: 'deploy.sh' })\n  .addTrigger('on_push')\n  .build();",
+    "solutionExplanation": "Builder pattern costruisce pipeline CI/CD complesse con stage, trigger e configurazioni. PipelineSetup offre DSL leggibile per definire flussi di deployment, facilitando manutenzione e versionamento della configurazione CI/CD.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-41",
+    "title": "Service locator pattern",
+    "category": "creational",
+    "code": "class ServiceLocator {\n  constructor() {\n    if (ServiceLocator.instance) {\n      return ServiceLocator.instance;\n    }\n    this.services = new Map();\n    ServiceLocator.instance = this;\n  }\n\n  register(name, service) {\n    this.services.set(name, service);\n  }\n\n  get(name) {\n    return this.services.get(name);\n  }\n\n  has(name) {\n    return this.services.has(name);\n  }\n}\n\nconst locator = new ServiceLocator();\nlocator.register('logger', console);\nlocator.register('db', { query: () => {} });\n\nconst logger = locator.get('logger');",
+    "solutionExplanation": "Singleton implementa Service Locator pattern per dependency injection. ServiceLocator centralizza la registrazione e risoluzione di servizi, facilitando testing, mockking e inversione di dipendenze in architetture complesse.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-42",
+    "title": "Clone configurazioni microservizi",
+    "category": "creational",
+    "code": "class ServiceConfig {\n  constructor(name, port, env) {\n    this.name = name;\n    this.port = port;\n    this.env = env || {};\n    this.healthCheck = '/health';\n  }\n\n  clone() {\n    return new ServiceConfig(this.name, this.port + 1, { ...this.env });\n  }\n}\n\nconst baseService = new ServiceConfig('api', 3000, { NODE_ENV: 'production' });\n\nconst service1 = baseService.clone();\nservice1.name = 'api-1';\n\nconst service2 = baseService.clone();\nservice2.name = 'api-2';",
+    "solutionExplanation": "Prototype duplica configurazioni di microservizi per scaling orizzontale. Clonando un servizio base si mantiene configurazione consistente incrementando solo porta, facilitando deployment di istanze multiple e load balancing.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-43",
+    "title": "Adapter factory multiplo",
+    "category": "creational",
+    "code": "class CloudStorage {\n  upload(file) {}\n}\n\nclass S3Storage extends CloudStorage {\n  upload(file) {\n    return `Uploaded to S3: ${file}`;\n  }\n}\n\nclass AzureStorage extends CloudStorage {\n  upload(file) {\n    return `Uploaded to Azure: ${file}`;\n  }\n}\n\nclass GCSStorage extends CloudStorage {\n  upload(file) {\n    return `Uploaded to GCS: ${file}`;\n  }\n}\n\nfunction createStorageProvider(provider) {\n  switch(provider) {\n    case 's3': return new S3Storage();\n    case 'azure': return new AzureStorage();\n    case 'gcs': return new GCSStorage();\n    default: throw new Error('Unknown provider');\n  }\n}\n\nconst storage = createStorageProvider('s3');",
+    "solutionExplanation": "Factory Method astrae la scelta del provider di cloud storage. Questo permette di switchare facilmente tra AWS, Azure e Google Cloud senza modificare il codice applicativo, facilitando multi-cloud strategy e vendor independence.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-44",
+    "title": "Schema validation builder",
+    "category": "creational",
+    "code": "class ValidationSchema {\n  constructor() {\n    this.rules = [];\n    this.required = false;\n    this.type = 'string';\n  }\n}\n\nclass SchemaDefinition {\n  constructor() {\n    this.schema = new ValidationSchema();\n  }\n\n  setType(type) {\n    this.schema.type = type;\n    return this;\n  }\n\n  setRequired(required) {\n    this.schema.required = required;\n    return this;\n  }\n\n  addRule(rule) {\n    this.schema.rules.push(rule);\n    return this;\n  }\n\n  build() {\n    return this.schema;\n  }\n}\n\nconst emailSchema = new SchemaDefinition()\n  .setType('string')\n  .setRequired(true)\n  .addRule({ type: 'email' })\n  .addRule({ minLength: 5 })\n  .build();",
+    "solutionExplanation": "Builder costruisce schemi di validazione complessi con regole multiple. SchemaDefinition offre DSL per definire vincoli su dati, facilitando validazione robusta e centralizzata in API e form.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-45",
+    "title": "WebSocket manager singleton",
+    "category": "creational",
+    "code": "class WebSocketManager {\n  constructor() {\n    if (WebSocketManager.instance) {\n      return WebSocketManager.instance;\n    }\n    this.connections = new Map();\n    this.messageQueue = [];\n    WebSocketManager.instance = this;\n  }\n\n  connect(url) {\n    if (!this.connections.has(url)) {\n      this.connections.set(url, new WebSocket(url));\n    }\n    return this.connections.get(url);\n  }\n\n  disconnect(url) {\n    const ws = this.connections.get(url);\n    if (ws) {\n      ws.close();\n      this.connections.delete(url);\n    }\n  }\n\n  broadcast(message) {\n    this.connections.forEach(ws => ws.send(message));\n  }\n}\n\nconst wsManager = new WebSocketManager();",
+    "solutionExplanation": "Singleton centralizza la gestione di connessioni WebSocket. WebSocketManager previene connessioni duplicate, gestisce reconnection logic e facilita broadcasting, migliorando efficienza e affidabilità delle comunicazioni real-time.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-46",
+    "title": "Template testing fixtures",
+    "category": "creational",
+    "code": "class TestUser {\n  constructor(id, name, email, role) {\n    this.id = id;\n    this.name = name;\n    this.email = email;\n    this.role = role;\n  }\n\n  clone() {\n    return new TestUser(this.id + 1, this.name, this.email, this.role);\n  }\n}\n\nconst adminTemplate = new TestUser(1, 'Admin User', 'admin@test.com', 'admin');\nconst userTemplate = new TestUser(100, 'Test User', 'user@test.com', 'user');\n\nconst testAdmin1 = adminTemplate.clone();\nconst testAdmin2 = adminTemplate.clone();\nconst testUser1 = userTemplate.clone();",
+    "solutionExplanation": "Prototype crea fixtures di test da template predefiniti. Questo accelera la scrittura di test garantendo dati consistenti, facilita setup di scenari complessi e migliora leggibilità dei test.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  },
+  {
+    "id": "creational-47",
+    "title": "Logger factory con livelli",
+    "category": "creational",
+    "code": "class BaseLogger {\n  constructor(level) {\n    this.level = level;\n  }\n\n  log(message) {}\n}\n\nclass DebugLogger extends BaseLogger {\n  log(message) {\n    console.log(`[DEBUG] ${message}`);\n  }\n}\n\nclass InfoLogger extends BaseLogger {\n  log(message) {\n    console.log(`[INFO] ${message}`);\n  }\n}\n\nclass ErrorLogger extends BaseLogger {\n  log(message) {\n    console.error(`[ERROR] ${message}`);\n  }\n}\n\nfunction createLogger(level) {\n  switch(level) {\n    case 'debug': return new DebugLogger(level);\n    case 'info': return new InfoLogger(level);\n    case 'error': return new ErrorLogger(level);\n    default: return new InfoLogger('info');\n  }\n}\n\nconst logger = createLogger('debug');",
+    "solutionExplanation": "Factory Method crea logger con livelli diversi. Centralizzando la creazione si garantisce formato consistente, facilita cambio globale di logging strategy e permette configurazione environment-based del livello di log.",
+    "solutionPatterns": [
+      "Factory Method"
+    ]
+  },
+  {
+    "id": "creational-48",
+    "title": "GraphQL query builder",
+    "category": "creational",
+    "code": "class GraphQLQuery {\n  constructor() {\n    this.operation = 'query';\n    this.fields = [];\n    this.variables = {};\n    this.filters = {};\n  }\n}\n\nclass QueryComposer {\n  constructor() {\n    this.query = new GraphQLQuery();\n  }\n\n  setOperation(op) {\n    this.query.operation = op;\n    return this;\n  }\n\n  selectFields(...fields) {\n    this.query.fields.push(...fields);\n    return this;\n  }\n\n  addVariable(name, value) {\n    this.query.variables[name] = value;\n    return this;\n  }\n\n  addFilter(key, value) {\n    this.query.filters[key] = value;\n    return this;\n  }\n\n  build() {\n    return `${this.query.operation} { ${this.query.fields.join(' ')} }`;\n  }\n}\n\nconst query = new QueryComposer()\n  .setOperation('query')\n  .selectFields('id', 'name', 'email')\n  .addFilter('active', true)\n  .build();",
+    "solutionExplanation": "Builder costruisce query GraphQL complesse con operazioni, campi e filtri. QueryComposer offre DSL type-safe per comporre query, riducendo errori di sintassi e migliorando developer experience con GraphQL.",
+    "solutionPatterns": [
+      "Builder"
+    ]
+  },
+  {
+    "id": "creational-49",
+    "title": "Feature flags manager",
+    "category": "creational",
+    "code": "class FeatureFlags {\n  constructor() {\n    if (FeatureFlags.instance) {\n      return FeatureFlags.instance;\n    }\n    this.flags = new Map();\n    FeatureFlags.instance = this;\n  }\n\n  enable(feature) {\n    this.flags.set(feature, true);\n  }\n\n  disable(feature) {\n    this.flags.set(feature, false);\n  }\n\n  isEnabled(feature) {\n    return this.flags.get(feature) || false;\n  }\n\n  toggle(feature) {\n    this.flags.set(feature, !this.isEnabled(feature));\n  }\n}\n\nconst flags1 = new FeatureFlags();\nflags1.enable('new-dashboard');\nconst flags2 = new FeatureFlags();\nconsole.log(flags2.isEnabled('new-dashboard')); // true",
+    "solutionExplanation": "Singleton gestisce feature flags centralmente. FeatureFlags mantiene stato globale delle feature abilitate, facilitando A/B testing, gradual rollout e runtime toggling senza deploy. Garantisce consistenza delle feature attraverso l'applicazione.",
+    "solutionPatterns": [
+      "Singleton"
+    ]
+  },
+  {
+    "id": "creational-50",
+    "title": "Test data generator",
+    "category": "creational",
+    "code": "class TestData {\n  constructor(type, count) {\n    this.type = type;\n    this.count = count;\n    this.data = [];\n  }\n\n  clone() {\n    const cloned = new TestData(this.type, this.count);\n    cloned.data = [...this.data];\n    return cloned;\n  }\n\n  addEntry(entry) {\n    this.data.push(entry);\n  }\n}\n\nconst userDataTemplate = new TestData('user', 100);\nuserDataTemplate.addEntry({ name: 'Test', email: 'test@example.com' });\n\nconst scenario1 = userDataTemplate.clone();\nscenario1.count = 50;\n\nconst scenario2 = userDataTemplate.clone();\nscenario2.count = 200;",
+    "solutionExplanation": "Prototype genera set di test data da template base. Clonando template si creano rapidamente scenari di test diversi (piccoli, grandi dataset) mantenendo struttura dati consistente e accelerando setup di test integration/e2e.",
+    "solutionPatterns": [
+      "Prototype"
+    ]
+  }
+]

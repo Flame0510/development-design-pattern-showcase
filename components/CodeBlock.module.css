@@ -1,0 +1,180 @@
+/* Container principale */
+.container {
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+/* Header con linguaggio e pulsante copia */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+
+.language {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+/* Pulsante copia */
+.copyBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #334155;
+  color: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyBtn:hover {
+  background: #475569;
+  transform: translateY(-1px);
+}
+
+.copyBtn:active {
+  transform: translateY(0);
+}
+
+.copyBtn.copied {
+  background: #10b981;
+  color: white;
+}
+
+.copyBtn.copied:hover {
+  background: #059669;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+}
+
+/* Contenuto del codice */
+.content {
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.pre {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.pre code {
+  display: block;
+  white-space: pre;
+}
+
+/* Scrollbar personalizzato */
+.content::-webkit-scrollbar {
+  height: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: #0f172a;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Syntax highlighting */
+.comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+.string {
+  color: #a5f3fc;
+}
+
+.keyword {
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.type {
+  color: #60a5fa;
+}
+
+.class {
+  color: #4ade80;
+}
+
+.function {
+  color: #fcd34d;
+}
+
+.number {
+  color: #fb923c;
+}
+
+.tag {
+  color: #f472b6;
+}
+
+.attrName {
+  color: #a78bfa;
+}
+
+.selector {
+  color: #fbbf24;
+}
+
+.property {
+  color: #60a5fa;
+}
+
+.value {
+  color: #a5f3fc;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .pre {
+    font-size: 0.8125rem;
+  }
+
+  .copyBtn {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .copyBtn span:not(.icon) {
+    display: none;
+  }
+}

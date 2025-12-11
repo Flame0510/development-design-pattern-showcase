@@ -1,0 +1,152 @@
+[
+  {
+    "id": "behavioral-01",
+    "title": "Sistema di notifiche blog",
+    "category": "behavioral",
+    "code": "class BlogPost {\n  constructor() {\n    this.subscribers = [];\n  }\n\n  subscribe(subscriber) {\n    this.subscribers.push(subscriber);\n  }\n\n  unsubscribe(subscriber) {\n    this.subscribers = this.subscribers.filter(s => s !== subscriber);\n  }\n\n  publish(article) {\n    console.log('Nuovo articolo:', article);\n    this.subscribers.forEach(sub => sub.update(article));\n  }\n}\n\nclass EmailSubscriber {\n  constructor(email) {\n    this.email = email;\n  }\n\n  update(article) {\n    console.log(`Email a ${this.email}: ${article}`);\n  }\n}\n\nclass SMSSubscriber {\n  constructor(phone) {\n    this.phone = phone;\n  }\n\n  update(article) {\n    console.log(`SMS a ${this.phone}: ${article}`);\n  }\n}\n\nconst blog = new BlogPost();\nblog.subscribe(new EmailSubscriber('user@example.com'));\nblog.subscribe(new SMSSubscriber('+39123456'));\nblog.publish('Design Patterns in JavaScript');",
+    "solutionExplanation": "Observer definisce una dipendenza uno-a-molti tra oggetti: quando un oggetto cambia stato, tutti i suoi dipendenti vengono notificati. BlogPost notifica automaticamente tutti i subscriber (email, SMS) quando viene pubblicato un nuovo articolo.",
+    "solutionPatterns": [
+      "Observer"
+    ]
+  },
+  {
+    "id": "behavioral-02",
+    "title": "Sistema di pagamento e-commerce",
+    "category": "behavioral",
+    "code": "class PaymentMethod {\n  pay(amount) {}\n}\n\nclass CreditCardPayment extends PaymentMethod {\n  pay(amount) {\n    console.log(`Pagamento di €${amount} con carta di credito`);\n  }\n}\n\nclass PayPalPayment extends PaymentMethod {\n  pay(amount) {\n    console.log(`Pagamento di €${amount} con PayPal`);\n  }\n}\n\nclass BankTransferPayment extends PaymentMethod {\n  pay(amount) {\n    console.log(`Pagamento di €${amount} con bonifico`);\n  }\n}\n\nclass ShoppingCart {\n  constructor(paymentMethod) {\n    this.paymentMethod = paymentMethod;\n  }\n\n  setPaymentMethod(method) {\n    this.paymentMethod = method;\n  }\n\n  checkout(amount) {\n    this.paymentMethod.pay(amount);\n  }\n}\n\nconst cart = new ShoppingCart(new CreditCardPayment());\ncart.checkout(99.99);\ncart.setPaymentMethod(new PayPalPayment());\ncart.checkout(149.50);",
+    "solutionExplanation": "Strategy definisce una famiglia di algoritmi intercambiabili. ShoppingCart può usare diversi metodi di pagamento (carta, PayPal, bonifico) senza modificare il suo codice, permettendo di cambiare strategia di pagamento a runtime.",
+    "solutionPatterns": [
+      "Strategy"
+    ]
+  },
+  {
+    "id": "behavioral-03",
+    "title": "Telecomando universale",
+    "category": "behavioral",
+    "code": "class Light {\n  on() { console.log('Luce accesa'); }\n  off() { console.log('Luce spenta'); }\n}\n\nclass LightOnAction {\n  constructor(light) {\n    this.light = light;\n  }\n\n  execute() {\n    this.light.on();\n  }\n\n  undo() {\n    this.light.off();\n  }\n}\n\nclass LightOffAction {\n  constructor(light) {\n    this.light = light;\n  }\n\n  execute() {\n    this.light.off();\n  }\n\n  undo() {\n    this.light.on();\n  }\n}\n\nclass RemoteControl {\n  constructor() {\n    this.history = [];\n  }\n\n  pressButton(command) {\n    command.execute();\n    this.history.push(command);\n  }\n\n  pressUndo() {\n    const command = this.history.pop();\n    if (command) command.undo();\n  }\n}\n\nconst light = new Light();\nconst remote = new RemoteControl();\nremote.pressButton(new LightOnAction(light));\nremote.pressUndo();",
+    "solutionExplanation": "Command incapsula una richiesta come oggetto, permettendo di parametrizzare client con operazioni diverse e supportare undo. RemoteControl esegue comandi (accendi/spegni luce) e mantiene uno storico per annullare le operazioni.",
+    "solutionPatterns": [
+      "Command"
+    ]
+  },
+  {
+    "id": "behavioral-04",
+    "title": "Distributore automatico",
+    "category": "behavioral",
+    "code": "class VendingMachine {\n  constructor() {\n    this.state = new NoMoneyState(this);\n  }\n\n  setState(state) {\n    this.state = state;\n  }\n\n  insertMoney() {\n    this.state.insertMoney();\n  }\n\n  selectProduct() {\n    this.state.selectProduct();\n  }\n\n  dispense() {\n    this.state.dispense();\n  }\n}\n\nclass NoMoneyState {\n  constructor(machine) {\n    this.machine = machine;\n  }\n\n  insertMoney() {\n    console.log('Denaro inserito');\n    this.machine.setState(new HasMoneyState(this.machine));\n  }\n\n  selectProduct() {\n    console.log('Inserire denaro prima');\n  }\n\n  dispense() {}\n}\n\nclass HasMoneyState {\n  constructor(machine) {\n    this.machine = machine;\n  }\n\n  insertMoney() {\n    console.log('Denaro già inserito');\n  }\n\n  selectProduct() {\n    console.log('Prodotto selezionato');\n    this.machine.setState(new DispensingState(this.machine));\n  }\n\n  dispense() {}\n}\n\nclass DispensingState {\n  constructor(machine) {\n    this.machine = machine;\n  }\n\n  insertMoney() {}\n  selectProduct() {}\n  \n  dispense() {\n    console.log('Erogazione prodotto');\n    this.machine.setState(new NoMoneyState(this.machine));\n  }\n}\n\nconst machine = new VendingMachine();\nmachine.insertMoney();\nmachine.selectProduct();\nmachine.dispense();",
+    "solutionExplanation": "State permette a un oggetto di cambiare comportamento quando cambia il suo stato interno. VendingMachine delega le operazioni allo stato corrente (NoMoney, HasMoney, Dispensing), cambiando comportamento automaticamente in base alla fase dell'acquisto.",
+    "solutionPatterns": [
+      "State"
+    ]
+  },
+  {
+    "id": "behavioral-05",
+    "title": "Preparazione bevande",
+    "category": "behavioral",
+    "code": "class Beverage {\n  prepare() {\n    this.boilWater();\n    this.brew();\n    this.pourInCup();\n    if (this.wantsCondiments()) {\n      this.addCondiments();\n    }\n  }\n\n  boilWater() {\n    console.log('Bollire acqua');\n  }\n\n  pourInCup() {\n    console.log('Versare nella tazza');\n  }\n\n  brew() {}\n  addCondiments() {}\n  \n  wantsCondiments() {\n    return true;\n  }\n}\n\nclass Tea extends Beverage {\n  brew() {\n    console.log('Infusione tè');\n  }\n\n  addCondiments() {\n    console.log('Aggiungere limone');\n  }\n}\n\nclass Coffee extends Beverage {\n  brew() {\n    console.log('Filtrare caffè');\n  }\n\n  addCondiments() {\n    console.log('Aggiungere latte e zucchero');\n  }\n}\n\nconst tea = new Tea();\ntea.prepare();",
+    "solutionExplanation": "Template Method definisce lo scheletro di un algoritmo in una classe base, delegando alcuni passi alle sottoclassi. Beverage definisce il processo di preparazione (bollire, brew, versare, condire), mentre Tea e Coffee implementano i passi specifici.",
+    "solutionPatterns": [
+      "Template Method"
+    ]
+  },
+  {
+    "id": "behavioral-06",
+    "title": "Iterazione playlist musicale",
+    "category": "behavioral",
+    "code": "class Song {\n  constructor(title, artist) {\n    this.title = title;\n    this.artist = artist;\n  }\n}\n\nclass Playlist {\n  constructor() {\n    this.songs = [];\n  }\n\n  addSong(song) {\n    this.songs.push(song);\n  }\n\n  createIterator() {\n    return new PlaylistIterator(this.songs);\n  }\n}\n\nclass PlaylistCursor {\n  constructor(songs) {\n    this.songs = songs;\n    this.position = 0;\n  }\n\n  hasNext() {\n    return this.position < this.songs.length;\n  }\n\n  next() {\n    return this.songs[this.position++];\n  }\n\n  reset() {\n    this.position = 0;\n  }\n}\n\nconst playlist = new Playlist();\nplaylist.addSong(new Song('Bohemian Rhapsody', 'Queen'));\nplaylist.addSong(new Song('Stairway to Heaven', 'Led Zeppelin'));\n\nconst iterator = playlist.createIterator();\nwhile (iterator.hasNext()) {\n  const song = iterator.next();\n  console.log(`${song.title} - ${song.artist}`);\n}",
+    "solutionExplanation": "Iterator fornisce un modo per accedere sequenzialmente agli elementi di una collezione senza esporre la rappresentazione sottostante. PlaylistIterator permette di scorrere le canzoni della playlist in modo uniforme, nascondendo i dettagli dell'array interno.",
+    "solutionPatterns": [
+      "Iterator"
+    ]
+  },
+  {
+    "id": "behavioral-07",
+    "title": "Chat room mediatore",
+    "category": "behavioral",
+    "code": "class ChatRoom {\n  constructor() {\n    this.users = [];\n  }\n\n  register(user) {\n    this.users.push(user);\n    user.chatRoom = this;\n  }\n\n  send(message, from, to) {\n    if (to) {\n      to.receive(message, from);\n    } else {\n      this.users.forEach(user => {\n        if (user !== from) {\n          user.receive(message, from);\n        }\n      });\n    }\n  }\n}\n\nclass User {\n  constructor(name) {\n    this.name = name;\n    this.chatRoom = null;\n  }\n\n  send(message, to) {\n    this.chatRoom.send(message, this, to);\n  }\n\n  receive(message, from) {\n    console.log(`${this.name} riceve da ${from.name}: ${message}`);\n  }\n}\n\nconst chatRoom = new ChatRoom();\nconst alice = new User('Alice');\nconst bob = new User('Bob');\nconst charlie = new User('Charlie');\n\nchatRoom.register(alice);\nchatRoom.register(bob);\nchatRoom.register(charlie);\n\nalice.send('Ciao a tutti!');\nbob.send('Ciao Alice!', alice);",
+    "solutionExplanation": "Mediator definisce un oggetto che incapsula come un insieme di oggetti interagisce. ChatRoom centralizza la comunicazione tra utenti, evitando che debbano conoscersi direttamente e riducendo l'accoppiamento tra User.",
+    "solutionPatterns": [
+      "Mediator"
+    ]
+  },
+  {
+    "id": "behavioral-08",
+    "title": "Sistema di supporto tecnico",
+    "category": "behavioral",
+    "code": "class SupportHandler {\n  constructor() {\n    this.nextHandler = null;\n  }\n\n  setNext(handler) {\n    this.nextHandler = handler;\n    return handler;\n  }\n\n  handle(request) {\n    if (this.nextHandler) {\n      return this.nextHandler.handle(request);\n    }\n    return 'Richiesta non gestita';\n  }\n}\n\nclass Level1Support extends SupportHandler {\n  handle(request) {\n    if (request.priority === 'low') {\n      return 'Level 1: Problema risolto';\n    }\n    return super.handle(request);\n  }\n}\n\nclass Level2Support extends SupportHandler {\n  handle(request) {\n    if (request.priority === 'medium') {\n      return 'Level 2: Problema risolto';\n    }\n    return super.handle(request);\n  }\n}\n\nclass Level3Support extends SupportHandler {\n  handle(request) {\n    if (request.priority === 'high') {\n      return 'Level 3: Problema risolto';\n    }\n    return super.handle(request);\n  }\n}\n\nconst l1 = new Level1Support();\nconst l2 = new Level2Support();\nconst l3 = new Level3Support();\n\nl1.setNext(l2).setNext(l3);\n\nconsole.log(l1.handle({ priority: 'medium' }));",
+    "solutionExplanation": "Chain of Responsibility passa una richiesta lungo una catena di handler finché uno la gestisce. Il sistema di supporto inoltra ticket dal Level 1 al 3 in base alla priorità, permettendo di aggiungere livelli senza modificare il codice esistente.",
+    "solutionPatterns": [
+      "Chain of Responsibility"
+    ]
+  },
+  {
+    "id": "behavioral-09",
+    "title": "Meteo e dashboard",
+    "category": "behavioral",
+    "code": "class WeatherStation {\n  constructor() {\n    this.observers = [];\n    this.temperature = 0;\n  }\n\n  addObserver(observer) {\n    this.observers.push(observer);\n  }\n\n  removeObserver(observer) {\n    this.observers = this.observers.filter(o => o !== observer);\n  }\n\n  setTemperature(temp) {\n    this.temperature = temp;\n    this.notifyObservers();\n  }\n\n  notifyObservers() {\n    this.observers.forEach(o => o.update(this.temperature));\n  }\n}\n\nclass PhoneDisplay {\n  update(temperature) {\n    console.log(`📱 Temperatura: ${temperature}°C`);\n  }\n}\n\nclass WebDisplay {\n  update(temperature) {\n    console.log(`🌐 Web dashboard: ${temperature}°C`);\n  }\n}\n\nconst station = new WeatherStation();\nstation.addObserver(new PhoneDisplay());\nstation.addObserver(new WebDisplay());\nstation.setTemperature(25);",
+    "solutionExplanation": "Observer notifica automaticamente gli oggetti dipendenti quando lo stato cambia. WeatherStation aggiorna tutti i display (phone, web) quando la temperatura cambia, mantenendo sincronizzate diverse visualizzazioni senza accoppiamento stretto.",
+    "solutionPatterns": [
+      "Observer"
+    ]
+  },
+  {
+    "id": "behavioral-10",
+    "title": "Compressione file",
+    "category": "behavioral",
+    "code": "class CompressionMethod {\n  compress(file) {}\n}\n\nclass ZipCompression extends CompressionStrategy {\n  compress(file) {\n    return `${file}.zip (ZIP compression)`;\n  }\n}\n\nclass RarCompression extends CompressionStrategy {\n  compress(file) {\n    return `${file}.rar (RAR compression)`;\n  }\n}\n\nclass GzipCompression extends CompressionStrategy {\n  compress(file) {\n    return `${file}.gz (GZIP compression)`;\n  }\n}\n\nclass FileCompressor {\n  constructor(strategy) {\n    this.strategy = strategy;\n  }\n\n  setStrategy(strategy) {\n    this.strategy = strategy;\n  }\n\n  compress(file) {\n    return this.strategy.compress(file);\n  }\n}\n\nconst compressor = new FileCompressor(new ZipCompression());\nconsole.log(compressor.compress('document'));\n\ncompressor.setStrategy(new GzipCompression());\nconsole.log(compressor.compress('archive'));",
+    "solutionExplanation": "Strategy permette di selezionare un algoritmo a runtime tra una famiglia di algoritmi intercambiabili. FileCompressor può usare diverse strategie di compressione (ZIP, RAR, GZIP) senza modificare il suo codice interno.",
+    "solutionPatterns": [
+      "Strategy"
+    ]
+  },
+  {
+    "id": "behavioral-11",
+    "title": "Editor di testo con undo",
+    "category": "behavioral",
+    "code": "class TextEditor {\n  constructor() {\n    this.content = '';\n  }\n\n  write(text) {\n    this.content += text;\n  }\n\n  getContent() {\n    return this.content;\n  }\n\n  setContent(content) {\n    this.content = content;\n  }\n}\n\nclass WriteAction {\n  constructor(editor, text) {\n    this.editor = editor;\n    this.text = text;\n    this.previousContent = '';\n  }\n\n  execute() {\n    this.previousContent = this.editor.getContent();\n    this.editor.write(this.text);\n  }\n\n  undo() {\n    this.editor.setContent(this.previousContent);\n  }\n}\n\nclass ActionManager {\n  constructor() {\n    this.history = [];\n  }\n\n  execute(command) {\n    command.execute();\n    this.history.push(command);\n  }\n\n  undo() {\n    const command = this.history.pop();\n    if (command) command.undo();\n  }\n}\n\nconst editor = new TextEditor();\nconst manager = new CommandManager();\n\nmanager.execute(new WriteCommand(editor, 'Hello '));\nmanager.execute(new WriteCommand(editor, 'World'));\nconsole.log(editor.getContent()); // 'Hello World'\nmanager.undo();\nconsole.log(editor.getContent()); // 'Hello '",
+    "solutionExplanation": "Command incapsula operazioni come oggetti, supportando undo/redo e logging. WriteCommand registra lo stato precedente dell'editor prima di modificarlo, permettendo a CommandManager di annullare le operazioni in ordine inverso.",
+    "solutionPatterns": [
+      "Command"
+    ]
+  },
+  {
+    "id": "behavioral-12",
+    "title": "Connessione TCP",
+    "category": "behavioral",
+    "code": "class TCPConnection {\n  constructor() {\n    this.state = new ClosedState(this);\n  }\n\n  setState(state) {\n    this.state = state;\n  }\n\n  open() {\n    this.state.open();\n  }\n\n  close() {\n    this.state.close();\n  }\n\n  send(data) {\n    this.state.send(data);\n  }\n}\n\nclass ClosedState {\n  constructor(connection) {\n    this.connection = connection;\n  }\n\n  open() {\n    console.log('Apertura connessione...');\n    this.connection.setState(new OpenState(this.connection));\n  }\n\n  close() {\n    console.log('Già chiusa');\n  }\n\n  send(data) {\n    console.log('Errore: connessione chiusa');\n  }\n}\n\nclass OpenState {\n  constructor(connection) {\n    this.connection = connection;\n  }\n\n  open() {\n    console.log('Già aperta');\n  }\n\n  close() {\n    console.log('Chiusura connessione...');\n    this.connection.setState(new ClosedState(this.connection));\n  }\n\n  send(data) {\n    console.log('Invio:', data);\n  }\n}\n\nconst conn = new TCPConnection();\nconn.open();\nconn.send('Hello');\nconn.close();",
+    "solutionExplanation": "State altera il comportamento di un oggetto quando il suo stato interno cambia. TCPConnection delega le operazioni (open, close, send) allo stato corrente (Closed, Open), cambiando comportamento in base allo stato della connessione.",
+    "solutionPatterns": [
+      "State"
+    ]
+  },
+  {
+    "id": "behavioral-13",
+    "title": "Report generator",
+    "category": "behavioral",
+    "code": "class ReportGenerator {\n  generate() {\n    this.collectData();\n    this.processData();\n    this.formatOutput();\n    this.saveReport();\n  }\n\n  collectData() {\n    console.log('Raccolta dati...');\n  }\n\n  processData() {}\n  formatOutput() {}\n\n  saveReport() {\n    console.log('Salvataggio report...');\n  }\n}\n\nclass PDFReport extends ReportGenerator {\n  processData() {\n    console.log('Elaborazione dati per PDF');\n  }\n\n  formatOutput() {\n    console.log('Formattazione PDF');\n  }\n}\n\nclass ExcelReport extends ReportGenerator {\n  processData() {\n    console.log('Elaborazione dati per Excel');\n  }\n\n  formatOutput() {\n    console.log('Formattazione Excel');\n  }\n}\n\nconst pdf = new PDFReport();\npdf.generate();",
+    "solutionExplanation": "Template Method definisce la struttura di un algoritmo lasciando alle sottoclassi l'implementazione di specifici passi. ReportGenerator stabilisce il processo di generazione (collect, process, format, save), mentre PDFReport ed ExcelReport personalizzano elaborazione e formattazione.",
+    "solutionPatterns": [
+      "Template Method"
+    ]
+  },
+  {
+    "id": "behavioral-14",
+    "title": "Navigazione collezioni",
+    "category": "behavioral",
+    "code": "class Book {\n  constructor(title, author) {\n    this.title = title;\n    this.author = author;\n  }\n}\n\nclass Library {\n  constructor() {\n    this.books = [];\n  }\n\n  addBook(book) {\n    this.books.push(book);\n  }\n\n  getIterator() {\n    return new BookIterator(this.books);\n  }\n\n  getReverseIterator() {\n    return new ReverseBookIterator(this.books);\n  }\n}\n\nclass BookCursor {\n  constructor(books) {\n    this.books = books;\n    this.index = 0;\n  }\n\n  hasNext() {\n    return this.index < this.books.length;\n  }\n\n  next() {\n    return this.books[this.index++];\n  }\n}\n\nclass ReverseBookCursor {\n  constructor(books) {\n    this.books = books;\n    this.index = books.length - 1;\n  }\n\n  hasNext() {\n    return this.index >= 0;\n  }\n\n  next() {\n    return this.books[this.index--];\n  }\n}\n\nconst library = new Library();\nlibrary.addBook(new Book('1984', 'Orwell'));\nlibrary.addBook(new Book('Dune', 'Herbert'));\n\nconst it = library.getReverseIterator();\nwhile (it.hasNext()) {\n  const book = it.next();\n  console.log(book.title);\n}",
+    "solutionExplanation": "Iterator fornisce accesso sequenziale agli elementi senza esporre la struttura interna. Library offre diversi iterator (normale e inverso) per scorrere i libri, nascondendo i dettagli implementativi e permettendo diverse modalità di attraversamento.",
+    "solutionPatterns": [
+      "Iterator"
+    ]
+  },
+  {
+    "id": "behavioral-15",
+    "title": "Sistema di messaggistica interna",
+    "category": "behavioral",
+    "code": "class MessageBroker {\n  constructor() {\n    this.users = new Map();\n  }\n\n  registerUser(user) {\n    this.users.set(user.id, user);\n    user.setBroker(this);\n  }\n\n  sendMessage(message, from, toId) {\n    const recipient = this.users.get(toId);\n    if (recipient) {\n      recipient.receive(message, from);\n    } else {\n      console.log('Utente non trovato');\n    }\n  }\n\n  broadcast(message, from) {\n    this.users.forEach(user => {\n      if (user.id !== from.id) {\n        user.receive(message, from);\n      }\n    });\n  }\n}\n\nclass Employee {\n  constructor(id, name) {\n    this.id = id;\n    this.name = name;\n    this.broker = null;\n  }\n\n  setBroker(broker) {\n    this.broker = broker;\n  }\n\n  send(message, toId) {\n    this.broker.sendMessage(message, this, toId);\n  }\n\n  broadcastAll(message) {\n    this.broker.broadcast(message, this);\n  }\n\n  receive(message, from) {\n    console.log(`${this.name} riceve da ${from.name}: ${message}`);\n  }\n}\n\nconst broker = new MessageBroker();\nconst emp1 = new Employee(1, 'Mario');\nconst emp2 = new Employee(2, 'Luigi');\n\nbroker.registerUser(emp1);\nbroker.registerUser(emp2);\n\nemp1.send('Ciao!', 2);",
+    "solutionExplanation": "Mediator riduce le dipendenze tra oggetti comunicanti centralizzando l'interazione. MessageBroker gestisce tutti i messaggi tra Employee, evitando che i dipendenti debbano conoscersi direttamente e facilitando l'aggiunta di nuovi partecipanti.",
+    "solutionPatterns": [
+      "Mediator"
+    ]
+  }
+]
