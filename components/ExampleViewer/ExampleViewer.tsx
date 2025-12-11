@@ -52,7 +52,12 @@ export default function ExampleViewer({
 
           {/* Code Block */}
           <div className="example-viewer__code-section">
-            <CodeBlock code={example.code} language="javascript" />
+            <CodeBlock 
+              code={example.code} 
+              language="javascript"
+              title={example.title}
+              context={`Esempio di ${translateCategory(example.category)} pattern dal quiz Design Pattern Showcase`}
+            />
           </div>
 
           {/* Solution Reveal Button or Solution Content */}

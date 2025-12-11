@@ -24,13 +24,15 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button } from "antd";
-import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
+import { Card, Button, Space } from "antd";
+import { CopyOutlined, CheckOutlined, CommentOutlined } from "@ant-design/icons";
 import './CodeBlock.scss';
 
 interface CodeBlockProps {
   code: string;
   language?: "javascript" | "typescript" | "html" | "css" | "json";
+  title?: string;
+  context?: string;
 }
 
 interface Token {
@@ -40,7 +42,7 @@ interface Token {
   text: string;
 }
 
-export default function CodeBlock({ code, language = "javascript" }: CodeBlockProps) {
+export default function CodeBlock({ code, language = "javascript", title, context }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -51,6 +53,29 @@ export default function CodeBlock({ code, language = "javascript" }: CodeBlockPr
     } catch (err) {
       console.error("Failed to copy:", err);
     }
+  };
+
+  const handleAskChatGPT = () => {
+    // Costruisci il prompt per ChatGPT
+    let prompt = `Sto studiando i Design Pattern e ho trovato questo esempio di codice${title ? ` intitolato "${title}"` : ''}.\n\n`;
+    
+    if (context) {
+      prompt += `Contesto: ${context}\n\n`;
+    }
+    
+    prompt += `Codice (${language}):\n\`\`\`${language}\n${code}\n\`\`\`\n\n`;
+    prompt += `Puoi spiegarmelo meglio? Vorrei capire:\n`;
+    prompt += `1. Cosa fa questo codice\n`;
+    prompt += `2. Quali design pattern implementa\n`;
+    prompt += `3. Perché questo approccio è vantaggioso\n`;
+    prompt += `4. Esempi pratici di utilizzo`;
+    
+    // Encode per URL
+    const encodedPrompt = encodeURIComponent(prompt);
+    
+    // Apri ChatGPT in una nuova tab con il prompt pre-compilato
+    const chatGPTUrl = `https://chat.openai.com/?q=${encodedPrompt}`;
+    window.open(chatGPTUrl, '_blank');
   };
 
   // PATTERN: Strategy Pattern - Different highlighting rules per language
@@ -178,14 +203,25 @@ export default function CodeBlock({ code, language = "javascript" }: CodeBlockPr
     >
       <div className="code-block__header">
         <span className="code-block__language">{language.toUpperCase()}</span>
-        <Button
-          type="text"
-          icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-          onClick={handleCopy}
-          className={copied ? "code-block__copy-button code-block__copy-button--copied" : "code-block__copy-button"}
-        >
-          {copied ? "Copiato!" : "Copia"}
-        </Button>
+        <Space size="small">
+          <Button
+            type="text"
+            icon={<CommentOutlined />}
+            onClick={handleAskChatGPT}
+            className="code-block__chatgpt-button"
+            title="Chiedi spiegazione a ChatGPT"
+          >
+            Chiedi a ChatGPT
+          </Button>
+          <Button
+            type="text"
+            icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+            onClick={handleCopy}
+            className={copied ? "code-block__copy-button code-block__copy-button--copied" : "code-block__copy-button"}
+          >
+            {copied ? "Copiato!" : "Copia"}
+          </Button>
+        </Space>
       </div>
       <pre className="code-block__pre">
         <code 

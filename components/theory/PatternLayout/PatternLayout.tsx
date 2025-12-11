@@ -140,7 +140,12 @@ export default function PatternLayout({ pattern }: PatternLayoutProps) {
                 <p className="pattern-layout__card-example-description">
                   {example.description}
                 </p>
-                <CodeBlock code={example.code} language={example.language} />
+                <CodeBlock 
+                  code={example.code} 
+                  language={example.language}
+                  title={example.title}
+                  context={`Esempio del pattern ${pattern.name} (${pattern.category}) - ${example.description}`}
+                />
                 {index < pattern.codeExamples.length - 1 && (
                   <Divider className="pattern-layout__card-example-divider" />
                 )}

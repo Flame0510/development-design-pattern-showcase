@@ -59,10 +59,10 @@ $info-light: #60a5fa;
 $blue-50: #eff6ff;         // Blu molto chiaro per background
 
 // === CODE SYNTAX HIGHLIGHTING ===
-$code-bg: #0d1117;         // GitHub dark background
+$code-bg: #1a1f2e;         // Navy dark più chiaro per migliore leggibilità
 $code-keyword: #ff79c6;    // Dracula pink (keywords)
 $code-string: #50fa7b;     // Dracula green (strings)
-$code-comment: #6272a4;    // Dracula comment blue
+$code-comment: #8b9dc3;    // Commenti più chiari e leggibili (era #6272a4)
 $code-function: #8be9fd;   // Dracula cyan (functions)
 $code-number: #bd93f9;     // Dracula purple (numbers)
 $code-operator: #ff79c6;   // Dracula pink (operators)

@@ -81,65 +81,256 @@ export const patterns: Record<string, PatternTheory> = {
     ],
     codeExamples: [
       {
-        title: 'Singleton Classico',
-        description: 'Implementazione base del pattern Singleton con lazy initialization.',
-        code: `class DatabaseConnection {
-  private static instance: DatabaseConnection;
-  private connectionString: string;
-
-  private constructor() {
-    this.connectionString = 'mongodb://localhost:27017';
-    console.log('Database connection created');
+        title: '❌ PROBLEMA: Senza Singleton - Istanze Multiple',
+        description: 'Questo codice crea molteplici istanze della configurazione, causando inconsistenza e spreco di memoria.',
+        code: `// ❌ PROBLEMA: Ogni volta che creiamo AppConfig, abbiamo un'istanza diversa
+class AppConfig {
+  constructor() {
+    this.settings = {
+      apiUrl: 'https://api.example.com',
+      timeout: 5000,
+      theme: 'dark'
+    };
+    // Caricamento pesante dal server (viene ripetuto ogni volta!)
+    this.loadFromServer();
   }
 
-  public static getInstance(): DatabaseConnection {
-    if (!DatabaseConnection.instance) {
-      DatabaseConnection.instance = new DatabaseConnection();
-    }
-    return DatabaseConnection.instance;
+  loadFromServer() {
+    console.log('Loading config from server... (expensive operation)');
   }
 
-  public query(sql: string): void {
-    console.log(\`Executing: \${sql}\`);
+  getSetting(key) {
+    return this.settings[key];
   }
 }
 
-// Utilizzo
-const db1 = DatabaseConnection.getInstance();
-const db2 = DatabaseConnection.getInstance();
+// ❌ Problema: Ogni modulo crea la propria istanza
+const config1 = new AppConfig();  // Loading config from server...
+const config2 = new AppConfig();  // Loading config from server... (di nuovo!)
 
-console.log(db1 === db2); // true - stessa istanza`,
+config1.settings.theme = 'light';
+console.log(config1.settings.theme); // 'light'
+console.log(config2.settings.theme); // 'dark' - inconsistenza!
+
+console.log(config1 === config2); // false - istanze diverse!`,
+        language: 'javascript'
+      },
+      {
+        title: '✅ SOLUZIONE: Singleton - Una Sola Istanza',
+        description: 'Il pattern Singleton garantisce che esista una sola istanza e fornisce un punto di accesso globale.',
+        code: `// ✅ SOLUZIONE: Singleton garantisce un'unica istanza
+class AppConfig {
+  // Variabile statica privata per memorizzare l'istanza unica
+  private static instance: AppConfig;
+  private settings: Record<string, any>;
+
+  // Costruttore privato impedisce la creazione diretta con 'new'
+  private constructor() {
+    this.settings = {
+      apiUrl: 'https://api.example.com',
+      timeout: 5000,
+      theme: 'dark'
+    };
+    // Caricamento pesante avviene una sola volta
+    this.loadFromServer();
+  }
+
+  // Metodo statico per ottenere l'istanza unica
+  public static getInstance(): AppConfig {
+    // Lazy initialization: crea l'istanza solo se non esiste
+    if (!AppConfig.instance) {
+      AppConfig.instance = new AppConfig();
+      console.log('✅ New instance created');
+    } else {
+      console.log('♻️ Returning existing instance');
+    }
+    return AppConfig.instance;
+  }
+
+  private loadFromServer(): void {
+    console.log('Loading config from server... (only once!)');
+  }
+
+  public getSetting(key: string): any {
+    return this.settings[key];
+  }
+
+  public setSetting(key: string, value: any): void {
+    this.settings[key] = value;
+  }
+}
+
+// ✅ Utilizzo: Tutti ottengono la stessa istanza
+const config1 = AppConfig.getInstance(); // ✅ New instance created
+const config2 = AppConfig.getInstance(); // ♻️ Returning existing instance
+
+config1.setSetting('theme', 'light');
+console.log(config1.getSetting('theme')); // 'light'
+console.log(config2.getSetting('theme')); // 'light' - consistenza!
+
+console.log(config1 === config2); // true - stessa istanza!`,
         language: 'typescript'
       },
       {
-        title: 'Singleton con Module Pattern (JavaScript)',
-        description: 'Approccio moderno usando i moduli JavaScript.',
-        code: `// ConfigManager.js
-class ConfigManager {
-  constructor() {
-    this.config = {
-      apiUrl: 'https://api.example.com',
-      timeout: 5000,
-      retries: 3
-    };
+        title: '🎯 Esempio Pratico: Database Connection Pool',
+        description: 'Caso d\'uso reale: pool di connessioni al database condiviso in tutta l\'app.',
+        code: `// 🎯 Esempio reale: Database Connection Pool
+class DatabasePool {
+  private static instance: DatabasePool;
+  private connections: any[] = [];
+  private maxConnections: number = 10;
+  private currentConnections: number = 0;
+
+  private constructor() {
+    console.log('🔧 Initializing database connection pool...');
+    this.initializePool();
   }
 
-  getConfig(key) {
-    return this.config[key];
+  public static getInstance(): DatabasePool {
+    if (!DatabasePool.instance) {
+      DatabasePool.instance = new DatabasePool();
+    }
+    return DatabasePool.instance;
   }
 
-  setConfig(key, value) {
-    this.config[key] = value;
+  private initializePool(): void {
+    // Crea 5 connessioni iniziali
+    for (let i = 0; i < 5; i++) {
+      this.connections.push({
+        id: i,
+        inUse: false,
+        connection: \`mongodb://localhost:27017/db_\${i}\`
+      });
+    }
+    this.currentConnections = 5;
+  }
+
+  // Ottieni una connessione dal pool
+  public getConnection(): any {
+    // Cerca una connessione libera
+    const available = this.connections.find(c => !c.inUse);
+    
+    if (available) {
+      available.inUse = true;
+      console.log(\`📤 Connection \${available.id} acquired\`);
+      return available;
+    }
+    
+    // Se non ci sono connessioni libere e non abbiamo raggiunto il max
+    if (this.currentConnections < this.maxConnections) {
+      const newConnection = {
+        id: this.currentConnections,
+        inUse: true,
+        connection: \`mongodb://localhost:27017/db_\${this.currentConnections}\`
+      };
+      this.connections.push(newConnection);
+      this.currentConnections++;
+      console.log(\`➕ New connection \${newConnection.id} created and acquired\`);
+      return newConnection;
+    }
+    
+    console.log('⚠️ No connections available, waiting...');
+    return null;
+  }
+
+  // Rilascia una connessione al pool
+  public releaseConnection(connection: any): void {
+    connection.inUse = false;
+    console.log(\`📥 Connection \${connection.id} released\`);
+  }
+
+  public getStats(): string {
+    const inUse = this.connections.filter(c => c.inUse).length;
+    return \`Total: \${this.currentConnections}, In use: \${inUse}, Available: \${this.currentConnections - inUse}\`;
   }
 }
 
-// Esporta un'istanza unica
-export default new ConfigManager();
+// 🎯 Utilizzo in diversi moduli dell'applicazione
+// Modulo User Service
+function userService() {
+  const pool = DatabasePool.getInstance();
+  const conn = pool.getConnection();
+  // ... esegui query ...
+  pool.releaseConnection(conn);
+}
 
-// Utilizzo in altri file
-import config from './ConfigManager';
-console.log(config.getConfig('apiUrl'));`,
-        language: 'javascript'
+// Modulo Order Service
+function orderService() {
+  const pool = DatabasePool.getInstance(); // Stessa istanza!
+  const conn = pool.getConnection();
+  // ... esegui query ...
+  pool.releaseConnection(conn);
+}
+
+// Tutti i servizi condividono lo stesso pool
+const pool1 = DatabasePool.getInstance();
+const pool2 = DatabasePool.getInstance();
+console.log(pool1 === pool2); // true
+console.log(pool1.getStats());`,
+        language: 'typescript'
+      },
+      {
+        title: '🆚 Confronto: Singleton vs Istanze Multiple',
+        description: 'Visualizzazione delle differenze tra i due approcci.',
+        code: `// 🆚 CONFRONTO DIRETTO
+
+// ❌ SENZA SINGLETON
+class Logger {
+  private logs: string[] = [];
+  
+  log(message: string) {
+    this.logs.push(\`[\${new Date().toISOString()}] \${message}\`);
+  }
+  
+  getLogs() {
+    return this.logs;
+  }
+}
+
+const logger1 = new Logger();
+const logger2 = new Logger();
+
+logger1.log('User logged in');
+logger2.log('Order created');
+
+console.log('Logger1 logs:', logger1.getLogs()); // ['User logged in']
+console.log('Logger2 logs:', logger2.getLogs()); // ['Order created']
+// ❌ I log sono divisi in istanze separate!
+
+// ✅ CON SINGLETON
+class SingletonLogger {
+  private static instance: SingletonLogger;
+  private logs: string[] = [];
+  
+  private constructor() {}
+  
+  static getInstance(): SingletonLogger {
+    if (!SingletonLogger.instance) {
+      SingletonLogger.instance = new SingletonLogger();
+    }
+    return SingletonLogger.instance;
+  }
+  
+  log(message: string): void {
+    this.logs.push(\`[\${new Date().toISOString()}] \${message}\`);
+  }
+  
+  getLogs(): string[] {
+    return this.logs;
+  }
+}
+
+const sLogger1 = SingletonLogger.getInstance();
+const sLogger2 = SingletonLogger.getInstance();
+
+sLogger1.log('User logged in');
+sLogger2.log('Order created');
+
+console.log('Singleton logs:', sLogger1.getLogs()); 
+// ['User logged in', 'Order created']
+console.log('Are they the same?', sLogger1 === sLogger2); // true
+// ✅ Tutti i log sono centralizzati in un'unica istanza!`,
+        language: 'typescript'
       }
     ],
     realWorldExamples: [
@@ -180,43 +371,101 @@ console.log(config.getConfig('apiUrl'));`,
     ],
     codeExamples: [
       {
-        title: 'Factory Method per Sistema di Notifiche',
-        description: 'Creazione di diversi tipi di notifiche basate sul canale.',
-        code: `// Product interface
+        title: '❌ PROBLEMA: Codice Rigido con Classi Concrete',
+        description: 'Quando il codice dipende direttamente da classi concrete, diventa difficile estendere.',
+        code: `// ❌ PROBLEMA: Il codice è rigidamente accoppiato alle classi concrete
+class NotificationService {
+  sendNotification(type: string, message: string) {
+    // ❌ Switch statement: aggiungere nuovi tipi richiede modificare questo codice
+    if (type === 'email') {
+      const email = new EmailNotification();
+      email.send(message);
+    } else if (type === 'sms') {
+      const sms = new SMSNotification();
+      sms.send(message);
+    } else if (type === 'push') {
+      const push = new PushNotification();
+      push.send(message);
+    }
+    // ❌ Per aggiungere Slack, Telegram, etc. dobbiamo modificare QUESTA funzione!
+  }
+}
+
+class EmailNotification {
+  send(message: string) {
+    console.log(\`📧 Email: \${message}\`);
+  }
+}
+
+class SMSNotification {
+  send(message: string) {
+    console.log(\`📱 SMS: \${message}\`);
+  }
+}
+
+class PushNotification {
+  send(message: string) {
+    console.log(\`🔔 Push: \${message}\`);
+  }
+}
+
+// ❌ Utilizzo rigido
+const service = new NotificationService();
+service.sendNotification('email', 'Order shipped!');
+service.sendNotification('sms', 'Code: 123456');
+
+// ❌ Problemi:
+// 1. Violazione Open/Closed Principle
+// 2. Impossibile estendere senza modificare NotificationService
+// 3. Testing difficile (dipendenze hard-coded)`,
+        language: 'typescript'
+      },
+      {
+        title: '✅ SOLUZIONE: Factory Method - Estensibilità',
+        description: 'Factory Method permette alle sottoclassi di decidere quale classe istanziare.',
+        code: `// ✅ SOLUZIONE: Factory Method con estensibilità
+
+// Product interface - tutti i tipi di notifica implementano questa
 interface Notification {
   send(message: string): void;
 }
 
-// Concrete Products
+// Concrete Products - implementazioni specifiche
 class EmailNotification implements Notification {
   send(message: string): void {
-    console.log(\`Sending email: \${message}\`);
+    console.log(\`📧 Sending email: \${message}\`);
+    // Logica specifica per email (SMTP, HTML formatting, etc.)
   }
 }
 
 class SMSNotification implements Notification {
   send(message: string): void {
-    console.log(\`Sending SMS: \${message}\`);
+    console.log(\`📱 Sending SMS: \${message}\`);
+    // Logica specifica per SMS (Twilio API, length limit, etc.)
   }
 }
 
 class PushNotification implements Notification {
   send(message: string): void {
-    console.log(\`Sending push notification: \${message}\`);
+    console.log(\`🔔 Sending push: \${message}\`);
+    // Logica specifica per push (FCM, APNS, etc.)
   }
 }
 
-// Creator
+// Creator astratto - definisce il factory method
 abstract class NotificationFactory {
+  // Factory Method - da implementare nelle sottoclassi
   abstract createNotification(): Notification;
 
+  // Template method che usa il factory method
   notify(message: string): void {
+    // ✅ Non sa quale tipo concreto viene creato
     const notification = this.createNotification();
     notification.send(message);
   }
 }
 
-// Concrete Creators
+// Concrete Creators - decidono quale Product creare
 class EmailNotificationFactory extends NotificationFactory {
   createNotification(): Notification {
     return new EmailNotification();
@@ -229,12 +478,254 @@ class SMSNotificationFactory extends NotificationFactory {
   }
 }
 
-// Utilizzo
+class PushNotificationFactory extends NotificationFactory {
+  createNotification(): Notification {
+    return new PushNotification();
+  }
+}
+
+// ✅ Utilizzo flessibile
 const emailFactory = new EmailNotificationFactory();
 emailFactory.notify('Your order has shipped!');
 
 const smsFactory = new SMSNotificationFactory();
-smsFactory.notify('Verification code: 123456');`,
+smsFactory.notify('Verification code: 123456');
+
+// ✅ Aggiungere nuovi tipi è facile - basta creare nuove classi!
+class SlackNotification implements Notification {
+  send(message: string): void {
+    console.log(\`💬 Sending Slack message: \${message}\`);
+  }
+}
+
+class SlackNotificationFactory extends NotificationFactory {
+  createNotification(): Notification {
+    return new SlackNotification();
+  }
+}
+
+const slackFactory = new SlackNotificationFactory();
+slackFactory.notify('Build completed successfully!');
+
+// ✅ Nessuna modifica al codice esistente richiesta!`,
+        language: 'typescript'
+      },
+      {
+        title: '🎯 Esempio Pratico: Sistema di Export Multi-Formato',
+        description: 'Export di report in formati diversi (PDF, Excel, CSV) usando Factory Method.',
+        code: `// 🎯 Esempio reale: Export di report in formati diversi
+
+// Product interface
+interface ReportExporter {
+  export(data: any[]): void;
+  getFileExtension(): string;
+}
+
+// Concrete Products
+class PDFExporter implements ReportExporter {
+  export(data: any[]): void {
+    console.log('📄 Generating PDF report...');
+    console.log('- Creating document structure');
+    console.log('- Adding headers and footers');
+    console.log('- Formatting tables');
+    console.log(\`- Exporting \${data.length} rows\`);
+    console.log(\`✅ PDF saved as report.\${this.getFileExtension()}\`);
+  }
+  
+  getFileExtension(): string {
+    return 'pdf';
+  }
+}
+
+class ExcelExporter implements ReportExporter {
+  export(data: any[]): void {
+    console.log('📊 Generating Excel report...');
+    console.log('- Creating workbook');
+    console.log('- Adding worksheets');
+    console.log('- Applying cell formatting');
+    console.log(\`- Writing \${data.length} rows\`);
+    console.log(\`✅ Excel saved as report.\${this.getFileExtension()}\`);
+  }
+  
+  getFileExtension(): string {
+    return 'xlsx';
+  }
+}
+
+class CSVExporter implements ReportExporter {
+  export(data: any[]): void {
+    console.log('📋 Generating CSV report...');
+    console.log('- Converting to comma-separated values');
+    console.log('- Escaping special characters');
+    console.log(\`- Writing \${data.length} rows\`);
+    console.log(\`✅ CSV saved as report.\${this.getFileExtension()}\`);
+  }
+  
+  getFileExtension(): string {
+    return 'csv';
+  }
+}
+
+// Creator astratto
+abstract class ReportGenerator {
+  // Factory Method
+  abstract createExporter(): ReportExporter;
+  
+  // Business logic che usa il factory method
+  generateReport(data: any[], filename: string): void {
+    console.log(\`\\n🔄 Starting report generation for \${filename}...\`);
+    
+    const exporter = this.createExporter();
+    const fullFilename = \`\${filename}.\${exporter.getFileExtension()}\`;
+    
+    console.log(\`Format: \${exporter.getFileExtension().toUpperCase()}\`);
+    exporter.export(data);
+    console.log('─'.repeat(50));
+  }
+}
+
+// Concrete Creators
+class PDFReportGenerator extends ReportGenerator {
+  createExporter(): ReportExporter {
+    return new PDFExporter();
+  }
+}
+
+class ExcelReportGenerator extends ReportGenerator {
+  createExporter(): ReportExporter {
+    return new ExcelExporter();
+  }
+}
+
+class CSVReportGenerator extends ReportGenerator {
+  createExporter(): ReportExporter {
+    return new CSVExporter();
+  }
+}
+
+// 🎯 Utilizzo in una applicazione reale
+const salesData = [
+  { month: 'Jan', sales: 10000 },
+  { month: 'Feb', sales: 15000 },
+  { month: 'Mar', sales: 12000 }
+];
+
+// Client code - può scegliere il formato dinamicamente
+function exportReport(format: string) {
+  let generator: ReportGenerator;
+  
+  switch(format) {
+    case 'pdf':
+      generator = new PDFReportGenerator();
+      break;
+    case 'excel':
+      generator = new ExcelReportGenerator();
+      break;
+    case 'csv':
+      generator = new CSVReportGenerator();
+      break;
+    default:
+      throw new Error('Unsupported format');
+  }
+  
+  generator.generateReport(salesData, 'sales_report_2024');
+}
+
+// Esportazione in formati diversi
+exportReport('pdf');
+exportReport('excel');
+exportReport('csv');`,
+        language: 'typescript'
+      },
+      {
+        title: '🆚 Confronto: Switch vs Factory Method',
+        description: 'Differenza tra codice procedurale e pattern Factory Method.',
+        code: `// 🆚 CONFRONTO DIRETTO
+
+// ❌ APPROCCIO PROCEDURALE (con switch)
+class ProceduralLogger {
+  log(type: string, message: string) {
+    switch(type) {
+      case 'file':
+        console.log(\`[FILE] Writing to disk: \${message}\`);
+        break;
+      case 'console':
+        console.log(\`[CONSOLE] \${message}\`);
+        break;
+      case 'database':
+        console.log(\`[DB] Inserting log: \${message}\`);
+        break;
+      // ❌ Per aggiungere 'cloud' devo modificare questa funzione!
+    }
+  }
+}
+
+const procLogger = new ProceduralLogger();
+procLogger.log('file', 'Error occurred');
+procLogger.log('console', 'Info message');
+
+// ✅ FACTORY METHOD (estensibile)
+interface Logger {
+  log(message: string): void;
+}
+
+class FileLogger implements Logger {
+  log(message: string): void {
+    console.log(\`[FILE] Writing to disk: \${message}\`);
+  }
+}
+
+class ConsoleLogger implements Logger {
+  log(message: string): void {
+    console.log(\`[CONSOLE] \${message}\`);
+  }
+}
+
+class DatabaseLogger implements Logger {
+  log(message: string): void {
+    console.log(\`[DB] Inserting log: \${message}\`);
+  }
+}
+
+abstract class LoggerFactory {
+  abstract createLogger(): Logger;
+  
+  writeLog(message: string): void {
+    const logger = this.createLogger();
+    logger.log(message);
+  }
+}
+
+class FileLoggerFactory extends LoggerFactory {
+  createLogger(): Logger {
+    return new FileLogger();
+  }
+}
+
+class ConsoleLoggerFactory extends LoggerFactory {
+  createLogger(): Logger {
+    return new ConsoleLogger();
+  }
+}
+
+// ✅ Aggiungere 'cloud' non richiede modifiche al codice esistente!
+class CloudLogger implements Logger {
+  log(message: string): void {
+    console.log(\`[CLOUD] Uploading log: \${message}\`);
+  }
+}
+
+class CloudLoggerFactory extends LoggerFactory {
+  createLogger(): Logger {
+    return new CloudLogger();
+  }
+}
+
+const fileFactory = new FileLoggerFactory();
+fileFactory.writeLog('Error occurred');
+
+const cloudFactory = new CloudLoggerFactory();
+cloudFactory.writeLog('System started'); // Nuovo tipo senza modifiche!`,
         language: 'typescript'
       }
     ],

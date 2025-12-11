@@ -43,6 +43,19 @@
         text-transform: uppercase;
     }
 
+    &__chatgpt-button {
+        color: $info !important;
+        border: fn.rem(1) solid $info;
+        padding: $spacing-2 $spacing-4;
+        height: auto;
+        
+        &:hover {
+            background-color: $info !important;
+            color: $white !important;
+            border-color: $info !important;
+        }
+    }
+
   &__copy-button {
     background-color: $yellow-primary;
     color: $navy-dark;

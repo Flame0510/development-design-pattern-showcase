@@ -23,6 +23,8 @@ import { useState, useEffect } from "react";
 import TeamSetup from "@/components/TeamSetup/TeamSetup";
 import RoundController from "@/components/RoundController/RoundController";
 import type { Team } from "@/lib/types";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import './page.scss';
 
 export default function Home() {
@@ -54,12 +56,21 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    if (confirm("Sei sicuro di voler ricominciare da capo?")) {
-      setTeams(null);
-      localStorage.removeItem("teams");
-      // Ricarica la pagina per resettare tutto
-      window.location.reload();
-    }
+    Modal.confirm({
+      title: "Ricomincia da capo",
+      icon: <ExclamationCircleOutlined />,
+      content: "Sei sicuro di voler ricominciare da capo? Tutti i progressi andranno persi.",
+      okText: "Sì, ricomincia",
+      cancelText: "Annulla",
+      okType: "danger",
+      onOk() {
+        setTeams(null);
+        localStorage.removeItem("teams");
+        localStorage.removeItem("gameState");
+        // Ricarica la pagina per resettare tutto
+        window.location.reload();
+      },
+    });
   };
 
   return (
