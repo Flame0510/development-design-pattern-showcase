@@ -3,19 +3,17 @@
  * SECTION: UI Components
  * 
  * ROLE:
- * - Syntax-highlighted code display with copy functionality
- * - Custom token-based highlighter for multiple languages
+ * - Monaco Editor read-only display with copy functionality
+ * - Toolbar with Playground, ChatGPT, Copy buttons
  * 
  * PATTERNS USED:
  * - BEM naming convention
- * - Custom syntax highlighter (Dracula theme colors)
- * - Custom scrollbar for code overflow
+ * - Monaco Editor for syntax highlighting (same as Playground)
  * 
  * NOTES FOR CONTRIBUTORS:
  * - Use rem() for all sizing
- * - Syntax highlighting colors are from Dracula theme
- * - GitHub dark background: $code-bg
- * - Typography: use $font-mono for code
+ * - Monaco Editor theme: vs-dark
+ * - Consistent with CodePlayground component
  */
 
 @use 'sass:color';
@@ -29,18 +27,26 @@
     }
 
     &__header {
+        position: sticky;
+        top: fn.rem(104); // Navbar (64px) + Breadcrumb (56px)
+        z-index: $z-30;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: $spacing-3;
         padding: $spacing-4;
-        padding-bottom: $spacing-1;
+        padding-bottom: $spacing-3;
+        border-bottom: fn.rem(1) solid $navy-light;
+        border-radius: $radius-base;
+        background-color: $navy-medium;
+        backdrop-filter: blur(fn.rem(10));
     }
 
     &__language {
         color: $yellow-primary;
-        // Typography handled by Ant Design Typography in TSX
         text-transform: uppercase;
+        font-weight: 600;
+        font-size: fn.rem(12);
+        letter-spacing: fn.rem(1);
     }
 
     &__chatgpt-button {
@@ -56,78 +62,39 @@
         }
     }
 
-  &__copy-button {
-    background-color: $yellow-primary;
-    color: $navy-dark;
-    border: none;
-    
-    &:hover {
+    &__playground-button {
+        color: $success !important;
+        border: fn.rem(1) solid $success;
+        padding: $spacing-2 $spacing-4;
+        height: auto;
+        
+        &:hover {
+            background-color: $success !important;
+            color: $white !important;
+            border-color: $success !important;
+        }
+    }
+
+    &__copy-button {
+        background-color: $yellow-primary;
+        color: $navy-dark;
+        border: none;
+        padding: $spacing-2 $spacing-4;
+        height: auto;
+        
+        &:hover {
             background-color: color.adjust($yellow-primary, $lightness: -10%);
-    }        &--copied {
+        }
+        
+        &--copied {
             background-color: $success;
             color: $white;
         }
     }
 
-    &__pre {
-        margin: 0;
-        padding: $spacing-4;
+    &__editor {
         background-color: $code-bg;
-        border-radius: $radius-base;
-        overflow-x: auto;
-        font-family: $font-mono;
-        font-size: fn.rem(14);
-        line-height: 1.6;
-
-        @include custom-scrollbar;
-
-        @include respond-below(md) {
-            font-size: fn.rem(12);
-        }
-    }
-
-    &__code {
-        color: $white;
-    }
-
-    // Syntax highlighting tokens (Dracula theme)
-    &__token {
-        &--keyword {
-            color: $code-keyword;
-            font-weight: $weight-semibold;
-        }
-
-        &--string {
-            color: $code-string;
-        }
-
-        &--comment {
-            color: $code-comment;
-            font-style: italic;
-        }
-
-        &--function {
-            color: $code-function;
-        }
-
-        &--number {
-            color: $code-number;
-        }
-
-        &--operator {
-            color: $code-operator;
-        }
-
-        &--punctuation {
-            color: $code-punctuation;
-        }
-
-        &--class {
-            color: $code-class;
-        }
-
-        &--property {
-            color: $code-string;
-        }
+        border-radius: 0 0 $radius-base $radius-base;
+        overflow: hidden;
     }
 }

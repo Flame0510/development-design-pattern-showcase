@@ -120,45 +120,52 @@ console.log(config1 === config2); // false - istanze diverse!`,
         description: 'Il pattern Singleton garantisce che esista una sola istanza e fornisce un punto di accesso globale.',
         code: `// ✅ SOLUZIONE: Singleton garantisce un'unica istanza
 class AppConfig {
-  // Variabile statica privata per memorizzare l'istanza unica
-  private static instance: AppConfig;
-  private settings: Record<string, any>;
-
-  // Costruttore privato impedisce la creazione diretta con 'new'
-  private constructor() {
+  constructor() {
+    // Impedisce la creazione diretta con 'new'
+    if (AppConfig._instance) {
+      return AppConfig._instance;
+    }
+    
     this.settings = {
       apiUrl: 'https://api.example.com',
       timeout: 5000,
       theme: 'dark'
     };
+    
     // Caricamento pesante avviene una sola volta
     this.loadFromServer();
+    
+    // Memorizza l'istanza unica
+    AppConfig._instance = this;
   }
 
   // Metodo statico per ottenere l'istanza unica
-  public static getInstance(): AppConfig {
+  static getInstance() {
     // Lazy initialization: crea l'istanza solo se non esiste
-    if (!AppConfig.instance) {
-      AppConfig.instance = new AppConfig();
+    if (!AppConfig._instance) {
+      AppConfig._instance = new AppConfig();
       console.log('✅ New instance created');
     } else {
       console.log('♻️ Returning existing instance');
     }
-    return AppConfig.instance;
+    return AppConfig._instance;
   }
 
-  private loadFromServer(): void {
+  loadFromServer() {
     console.log('Loading config from server... (only once!)');
   }
 
-  public getSetting(key: string): any {
+  getSetting(key) {
     return this.settings[key];
   }
 
-  public setSetting(key: string, value: any): void {
+  setSetting(key, value) {
     this.settings[key] = value;
   }
 }
+
+// Variabile statica privata per memorizzare l'istanza unica
+AppConfig._instance = null;
 
 // ✅ Utilizzo: Tutti ottengono la stessa istanza
 const config1 = AppConfig.getInstance(); // ✅ New instance created
@@ -169,31 +176,37 @@ console.log(config1.getSetting('theme')); // 'light'
 console.log(config2.getSetting('theme')); // 'light' - consistenza!
 
 console.log(config1 === config2); // true - stessa istanza!`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: '🎯 Esempio Pratico: Database Connection Pool',
         description: 'Caso d\'uso reale: pool di connessioni al database condiviso in tutta l\'app.',
         code: `// 🎯 Esempio reale: Database Connection Pool
 class DatabasePool {
-  private static instance: DatabasePool;
-  private connections: any[] = [];
-  private maxConnections: number = 10;
-  private currentConnections: number = 0;
-
-  private constructor() {
+  constructor() {
+    // Impedisce la creazione diretta
+    if (DatabasePool._instance) {
+      return DatabasePool._instance;
+    }
+    
+    this.connections = [];
+    this.maxConnections = 10;
+    this.currentConnections = 0;
+    
     console.log('🔧 Initializing database connection pool...');
     this.initializePool();
+    
+    DatabasePool._instance = this;
   }
 
-  public static getInstance(): DatabasePool {
-    if (!DatabasePool.instance) {
-      DatabasePool.instance = new DatabasePool();
+  static getInstance() {
+    if (!DatabasePool._instance) {
+      DatabasePool._instance = new DatabasePool();
     }
-    return DatabasePool.instance;
+    return DatabasePool._instance;
   }
 
-  private initializePool(): void {
+  initializePool() {
     // Crea 5 connessioni iniziali
     for (let i = 0; i < 5; i++) {
       this.connections.push({
@@ -206,7 +219,7 @@ class DatabasePool {
   }
 
   // Ottieni una connessione dal pool
-  public getConnection(): any {
+  getConnection() {
     // Cerca una connessione libera
     const available = this.connections.find(c => !c.inUse);
     
@@ -234,16 +247,19 @@ class DatabasePool {
   }
 
   // Rilascia una connessione al pool
-  public releaseConnection(connection: any): void {
+  releaseConnection(connection) {
     connection.inUse = false;
     console.log(\`📥 Connection \${connection.id} released\`);
   }
 
-  public getStats(): string {
+  getStats() {
     const inUse = this.connections.filter(c => c.inUse).length;
     return \`Total: \${this.currentConnections}, In use: \${inUse}, Available: \${this.currentConnections - inUse}\`;
   }
 }
+
+// Variabile statica per l'istanza
+DatabasePool._instance = null;
 
 // 🎯 Utilizzo in diversi moduli dell'applicazione
 // Modulo User Service
@@ -267,7 +283,7 @@ const pool1 = DatabasePool.getInstance();
 const pool2 = DatabasePool.getInstance();
 console.log(pool1 === pool2); // true
 console.log(pool1.getStats());`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: '🆚 Confronto: Singleton vs Istanze Multiple',
@@ -276,9 +292,11 @@ console.log(pool1.getStats());`,
 
 // ❌ SENZA SINGLETON
 class Logger {
-  private logs: string[] = [];
+  constructor() {
+    this.logs = [];
+  }
   
-  log(message: string) {
+  log(message) {
     this.logs.push(\`[\${new Date().toISOString()}] \${message}\`);
   }
   
@@ -299,26 +317,32 @@ console.log('Logger2 logs:', logger2.getLogs()); // ['Order created']
 
 // ✅ CON SINGLETON
 class SingletonLogger {
-  private static instance: SingletonLogger;
-  private logs: string[] = [];
-  
-  private constructor() {}
-  
-  static getInstance(): SingletonLogger {
-    if (!SingletonLogger.instance) {
-      SingletonLogger.instance = new SingletonLogger();
+  constructor() {
+    if (SingletonLogger._instance) {
+      return SingletonLogger._instance;
     }
-    return SingletonLogger.instance;
+    
+    this.logs = [];
+    SingletonLogger._instance = this;
   }
   
-  log(message: string): void {
+  static getInstance() {
+    if (!SingletonLogger._instance) {
+      SingletonLogger._instance = new SingletonLogger();
+    }
+    return SingletonLogger._instance;
+  }
+  
+  log(message) {
     this.logs.push(\`[\${new Date().toISOString()}] \${message}\`);
   }
   
-  getLogs(): string[] {
+  getLogs() {
     return this.logs;
   }
 }
+
+SingletonLogger._instance = null;
 
 const sLogger1 = SingletonLogger.getInstance();
 const sLogger2 = SingletonLogger.getInstance();
@@ -330,7 +354,7 @@ console.log('Singleton logs:', sLogger1.getLogs());
 // ['User logged in', 'Order created']
 console.log('Are they the same?', sLogger1 === sLogger2); // true
 // ✅ Tutti i log sono centralizzati in un'unica istanza!`,
-        language: 'typescript'
+        language: 'javascript'
       }
     ],
     realWorldExamples: [
@@ -375,7 +399,7 @@ console.log('Are they the same?', sLogger1 === sLogger2); // true
         description: 'Quando il codice dipende direttamente da classi concrete, diventa difficile estendere.',
         code: `// ❌ PROBLEMA: Il codice è rigidamente accoppiato alle classi concrete
 class NotificationService {
-  sendNotification(type: string, message: string) {
+  sendNotification(type, message) {
     // ❌ Switch statement: aggiungere nuovi tipi richiede modificare questo codice
     if (type === 'email') {
       const email = new EmailNotification();
@@ -392,19 +416,19 @@ class NotificationService {
 }
 
 class EmailNotification {
-  send(message: string) {
+  send(message) {
     console.log(\`📧 Email: \${message}\`);
   }
 }
 
 class SMSNotification {
-  send(message: string) {
+  send(message) {
     console.log(\`📱 SMS: \${message}\`);
   }
 }
 
 class PushNotification {
-  send(message: string) {
+  send(message) {
     console.log(\`🔔 Push: \${message}\`);
   }
 }
@@ -418,47 +442,44 @@ service.sendNotification('sms', 'Code: 123456');
 // 1. Violazione Open/Closed Principle
 // 2. Impossibile estendere senza modificare NotificationService
 // 3. Testing difficile (dipendenze hard-coded)`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: '✅ SOLUZIONE: Factory Method - Estensibilità',
         description: 'Factory Method permette alle sottoclassi di decidere quale classe istanziare.',
         code: `// ✅ SOLUZIONE: Factory Method con estensibilità
 
-// Product interface - tutti i tipi di notifica implementano questa
-interface Notification {
-  send(message: string): void;
-}
-
 // Concrete Products - implementazioni specifiche
-class EmailNotification implements Notification {
-  send(message: string): void {
+class EmailNotification {
+  send(message) {
     console.log(\`📧 Sending email: \${message}\`);
     // Logica specifica per email (SMTP, HTML formatting, etc.)
   }
 }
 
-class SMSNotification implements Notification {
-  send(message: string): void {
+class SMSNotification {
+  send(message) {
     console.log(\`📱 Sending SMS: \${message}\`);
     // Logica specifica per SMS (Twilio API, length limit, etc.)
   }
 }
 
-class PushNotification implements Notification {
-  send(message: string): void {
+class PushNotification {
+  send(message) {
     console.log(\`🔔 Sending push: \${message}\`);
     // Logica specifica per push (FCM, APNS, etc.)
   }
 }
 
-// Creator astratto - definisce il factory method
-abstract class NotificationFactory {
-  // Factory Method - da implementare nelle sottoclassi
-  abstract createNotification(): Notification;
+// Creator base - definisce il factory method
+class NotificationFactory {
+  // Factory Method - da sovrascrivere nelle sottoclassi
+  createNotification() {
+    throw new Error('createNotification() must be implemented in subclass');
+  }
 
   // Template method che usa il factory method
-  notify(message: string): void {
+  notify(message) {
     // ✅ Non sa quale tipo concreto viene creato
     const notification = this.createNotification();
     notification.send(message);
@@ -467,19 +488,19 @@ abstract class NotificationFactory {
 
 // Concrete Creators - decidono quale Product creare
 class EmailNotificationFactory extends NotificationFactory {
-  createNotification(): Notification {
+  createNotification() {
     return new EmailNotification();
   }
 }
 
 class SMSNotificationFactory extends NotificationFactory {
-  createNotification(): Notification {
+  createNotification() {
     return new SMSNotification();
   }
 }
 
 class PushNotificationFactory extends NotificationFactory {
-  createNotification(): Notification {
+  createNotification() {
     return new PushNotification();
   }
 }
@@ -492,14 +513,14 @@ const smsFactory = new SMSNotificationFactory();
 smsFactory.notify('Verification code: 123456');
 
 // ✅ Aggiungere nuovi tipi è facile - basta creare nuove classi!
-class SlackNotification implements Notification {
-  send(message: string): void {
+class SlackNotification {
+  send(message) {
     console.log(\`💬 Sending Slack message: \${message}\`);
   }
 }
 
 class SlackNotificationFactory extends NotificationFactory {
-  createNotification(): Notification {
+  createNotification() {
     return new SlackNotification();
   }
 }
@@ -508,22 +529,16 @@ const slackFactory = new SlackNotificationFactory();
 slackFactory.notify('Build completed successfully!');
 
 // ✅ Nessuna modifica al codice esistente richiesta!`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: '🎯 Esempio Pratico: Sistema di Export Multi-Formato',
         description: 'Export di report in formati diversi (PDF, Excel, CSV) usando Factory Method.',
         code: `// 🎯 Esempio reale: Export di report in formati diversi
 
-// Product interface
-interface ReportExporter {
-  export(data: any[]): void;
-  getFileExtension(): string;
-}
-
 // Concrete Products
-class PDFExporter implements ReportExporter {
-  export(data: any[]): void {
+class PDFExporter {
+  export(data) {
     console.log('📄 Generating PDF report...');
     console.log('- Creating document structure');
     console.log('- Adding headers and footers');
@@ -532,13 +547,13 @@ class PDFExporter implements ReportExporter {
     console.log(\`✅ PDF saved as report.\${this.getFileExtension()}\`);
   }
   
-  getFileExtension(): string {
+  getFileExtension() {
     return 'pdf';
   }
 }
 
-class ExcelExporter implements ReportExporter {
-  export(data: any[]): void {
+class ExcelExporter {
+  export(data) {
     console.log('📊 Generating Excel report...');
     console.log('- Creating workbook');
     console.log('- Adding worksheets');
@@ -547,13 +562,13 @@ class ExcelExporter implements ReportExporter {
     console.log(\`✅ Excel saved as report.\${this.getFileExtension()}\`);
   }
   
-  getFileExtension(): string {
+  getFileExtension() {
     return 'xlsx';
   }
 }
 
-class CSVExporter implements ReportExporter {
-  export(data: any[]): void {
+class CSVExporter {
+  export(data) {
     console.log('📋 Generating CSV report...');
     console.log('- Converting to comma-separated values');
     console.log('- Escaping special characters');
@@ -561,18 +576,20 @@ class CSVExporter implements ReportExporter {
     console.log(\`✅ CSV saved as report.\${this.getFileExtension()}\`);
   }
   
-  getFileExtension(): string {
+  getFileExtension() {
     return 'csv';
   }
 }
 
-// Creator astratto
-abstract class ReportGenerator {
-  // Factory Method
-  abstract createExporter(): ReportExporter;
+// Creator base
+class ReportGenerator {
+  // Factory Method - da sovrascrivere
+  createExporter() {
+    throw new Error('createExporter() must be implemented');
+  }
   
   // Business logic che usa il factory method
-  generateReport(data: any[], filename: string): void {
+  generateReport(data, filename) {
     console.log(\`\\n🔄 Starting report generation for \${filename}...\`);
     
     const exporter = this.createExporter();
@@ -586,19 +603,19 @@ abstract class ReportGenerator {
 
 // Concrete Creators
 class PDFReportGenerator extends ReportGenerator {
-  createExporter(): ReportExporter {
+  createExporter() {
     return new PDFExporter();
   }
 }
 
 class ExcelReportGenerator extends ReportGenerator {
-  createExporter(): ReportExporter {
+  createExporter() {
     return new ExcelExporter();
   }
 }
 
 class CSVReportGenerator extends ReportGenerator {
-  createExporter(): ReportExporter {
+  createExporter() {
     return new CSVExporter();
   }
 }
@@ -611,8 +628,8 @@ const salesData = [
 ];
 
 // Client code - può scegliere il formato dinamicamente
-function exportReport(format: string) {
-  let generator: ReportGenerator;
+function exportReport(format) {
+  let generator;
   
   switch(format) {
     case 'pdf':
@@ -635,7 +652,7 @@ function exportReport(format: string) {
 exportReport('pdf');
 exportReport('excel');
 exportReport('csv');`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: '🆚 Confronto: Switch vs Factory Method',
@@ -644,7 +661,7 @@ exportReport('csv');`,
 
 // ❌ APPROCCIO PROCEDURALE (con switch)
 class ProceduralLogger {
-  log(type: string, message: string) {
+  log(type, message) {
     switch(type) {
       case 'file':
         console.log(\`[FILE] Writing to disk: \${message}\`);
@@ -665,58 +682,56 @@ procLogger.log('file', 'Error occurred');
 procLogger.log('console', 'Info message');
 
 // ✅ FACTORY METHOD (estensibile)
-interface Logger {
-  log(message: string): void;
-}
-
-class FileLogger implements Logger {
-  log(message: string): void {
+class FileLogger {
+  log(message) {
     console.log(\`[FILE] Writing to disk: \${message}\`);
   }
 }
 
-class ConsoleLogger implements Logger {
-  log(message: string): void {
+class ConsoleLogger {
+  log(message) {
     console.log(\`[CONSOLE] \${message}\`);
   }
 }
 
-class DatabaseLogger implements Logger {
-  log(message: string): void {
+class DatabaseLogger {
+  log(message) {
     console.log(\`[DB] Inserting log: \${message}\`);
   }
 }
 
-abstract class LoggerFactory {
-  abstract createLogger(): Logger;
+class LoggerFactory {
+  createLogger() {
+    throw new Error('createLogger() must be implemented');
+  }
   
-  writeLog(message: string): void {
+  writeLog(message) {
     const logger = this.createLogger();
     logger.log(message);
   }
 }
 
 class FileLoggerFactory extends LoggerFactory {
-  createLogger(): Logger {
+  createLogger() {
     return new FileLogger();
   }
 }
 
 class ConsoleLoggerFactory extends LoggerFactory {
-  createLogger(): Logger {
+  createLogger() {
     return new ConsoleLogger();
   }
 }
 
 // ✅ Aggiungere 'cloud' non richiede modifiche al codice esistente!
-class CloudLogger implements Logger {
-  log(message: string): void {
+class CloudLogger {
+  log(message) {
     console.log(\`[CLOUD] Uploading log: \${message}\`);
   }
 }
 
 class CloudLoggerFactory extends LoggerFactory {
-  createLogger(): Logger {
+  createLogger() {
     return new CloudLogger();
   }
 }
@@ -726,7 +741,7 @@ fileFactory.writeLog('Error occurred');
 
 const cloudFactory = new CloudLoggerFactory();
 cloudFactory.writeLog('System started'); // Nuovo tipo senza modifiche!`,
-        language: 'typescript'
+        language: 'javascript'
       }
     ],
     realWorldExamples: [
@@ -768,84 +783,77 @@ cloudFactory.writeLog('System started'); // Nuovo tipo senza modifiche!`,
       {
         title: 'Abstract Factory per UI Cross-Platform',
         description: 'Creazione di componenti UI per Windows e Mac.',
-        code: `// Abstract Products
-interface Button {
-  render(): void;
-  onClick(callback: () => void): void;
-}
-
-interface Checkbox {
-  render(): void;
-  toggle(): void;
-}
-
-// Concrete Products - Windows
-class WindowsButton implements Button {
-  render(): void {
+        code: `// Concrete Products - Windows
+class WindowsButton {
+  render() {
     console.log('Rendering Windows button');
   }
-  onClick(callback: () => void): void {
+  onClick(callback) {
     console.log('Windows button clicked');
     callback();
   }
 }
 
-class WindowsCheckbox implements Checkbox {
-  render(): void {
+class WindowsCheckbox {
+  render() {
     console.log('Rendering Windows checkbox');
   }
-  toggle(): void {
+  toggle() {
     console.log('Windows checkbox toggled');
   }
 }
 
 // Concrete Products - Mac
-class MacButton implements Button {
-  render(): void {
+class MacButton {
+  render() {
     console.log('Rendering Mac button');
   }
-  onClick(callback: () => void): void {
+  onClick(callback) {
     console.log('Mac button clicked');
     callback();
   }
 }
 
-class MacCheckbox implements Checkbox {
-  render(): void {
+class MacCheckbox {
+  render() {
     console.log('Rendering Mac checkbox');
   }
-  toggle(): void {
+  toggle() {
     console.log('Mac checkbox toggled');
   }
 }
 
-// Abstract Factory
-interface GUIFactory {
-  createButton(): Button;
-  createCheckbox(): Checkbox;
+// Abstract Factory base
+class GUIFactory {
+  createButton() {
+    throw new Error('createButton() must be implemented');
+  }
+  createCheckbox() {
+    throw new Error('createCheckbox() must be implemented');
+  }
 }
 
 // Concrete Factories
-class WindowsFactory implements GUIFactory {
-  createButton(): Button {
+class WindowsFactory extends GUIFactory {
+  createButton() {
     return new WindowsButton();
   }
-  createCheckbox(): Checkbox {
+  createCheckbox() {
     return new WindowsCheckbox();
   }
 }
 
-class MacFactory implements GUIFactory {
-  createButton(): Button {
+class MacFactory extends GUIFactory {
+  createButton() {
     return new MacButton();
   }
-  createCheckbox(): Checkbox {
+  createCheckbox() {
     return new MacCheckbox();
   }
 }
 
 // Client code
-function renderUI(factory: GUIFactory) {
+function renderUI(factory) {
   const button = factory.createButton();
   const checkbox = factory.createCheckbox();
   
@@ -857,7 +865,7 @@ function renderUI(factory: GUIFactory) {
 const os = 'Windows'; // oppure 'Mac'
 const factory = os === 'Windows' ? new WindowsFactory() : new MacFactory();
 renderUI(factory);`,
-        language: 'typescript'
+        language: 'javascript'
       }
     ],
     realWorldExamples: [
@@ -900,13 +908,15 @@ renderUI(factory);`,
         title: 'Builder per Query SQL',
         description: 'Costruzione fluida di query SQL complesse.',
         code: `class SQLQuery {
-  private selectClause: string = '';
-  private fromClause: string = '';
-  private whereConditions: string[] = [];
-  private orderByClause: string = '';
-  private limitClause: string = '';
+  constructor() {
+    this.selectClause = '';
+    this.fromClause = '';
+    this.whereConditions = [];
+    this.orderByClause = '';
+    this.limitClause = '';
+  }
 
-  toString(): string {
+  toString() {
     let query = this.selectClause + ' ' + this.fromClause;
     
     if (this.whereConditions.length > 0) {
@@ -926,38 +936,36 @@ renderUI(factory);`,
 }
 
 class QueryBuilder {
-  private query: SQLQuery;
-
   constructor() {
     this.query = new SQLQuery();
   }
 
-  select(...columns: string[]): this {
-    this.query['selectClause'] = \`SELECT \${columns.join(', ')}\`;
+  select(...columns) {
+    this.query.selectClause = \`SELECT \${columns.join(', ')}\`;
     return this;
   }
 
-  from(table: string): this {
-    this.query['fromClause'] = \`FROM \${table}\`;
+  from(table) {
+    this.query.fromClause = \`FROM \${table}\`;
     return this;
   }
 
-  where(condition: string): this {
-    this.query['whereConditions'].push(condition);
+  where(condition) {
+    this.query.whereConditions.push(condition);
     return this;
   }
 
-  orderBy(column: string, direction: 'ASC' | 'DESC' = 'ASC'): this {
-    this.query['orderByClause'] = \`ORDER BY \${column} \${direction}\`;
+  orderBy(column, direction = 'ASC') {
+    this.query.orderByClause = \`ORDER BY \${column} \${direction}\`;
     return this;
   }
 
-  limit(count: number): this {
-    this.query['limitClause'] = \`LIMIT \${count}\`;
+  limit(count) {
+    this.query.limitClause = \`LIMIT \${count}\`;
     return this;
   }
 
-  build(): SQLQuery {
+  build() {
     return this.query;
   }
 }
@@ -974,21 +982,21 @@ const query = new QueryBuilder()
 
 console.log(query.toString());
 // SELECT name, email, age FROM users WHERE age > 18 AND active = true ORDER BY name ASC LIMIT 10`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: 'Builder per Oggetti Complessi',
         description: 'Costruzione di un hamburger con opzioni multiple.',
         code: `class Hamburger {
-  constructor(
-    public bun: string,
-    public patty: string,
-    public cheese?: string,
-    public toppings: string[] = [],
-    public sauces: string[] = []
-  ) {}
+  constructor(bun, patty, cheese, toppings = [], sauces = []) {
+    this.bun = bun;
+    this.patty = patty;
+    this.cheese = cheese;
+    this.toppings = toppings;
+    this.sauces = sauces;
+  }
 
-  describe(): string {
+  describe() {
     let description = \`\${this.bun} bun with \${this.patty} patty\`;
     if (this.cheese) description += \`, \${this.cheese} cheese\`;
     if (this.toppings.length) description += \`, toppings: \${this.toppings.join(', ')}\`;
@@ -998,38 +1006,40 @@ console.log(query.toString());
 }
 
 class HamburgerBuilder {
-  private bun: string = 'regular';
-  private patty: string = 'beef';
-  private cheese?: string;
-  private toppings: string[] = [];
-  private sauces: string[] = [];
+  constructor() {
+    this.bun = 'regular';
+    this.patty = 'beef';
+    this.cheese = null;
+    this.toppings = [];
+    this.sauces = [];
+  }
 
-  setBun(bun: string): this {
+  setBun(bun) {
     this.bun = bun;
     return this;
   }
 
-  setPatty(patty: string): this {
+  setPatty(patty) {
     this.patty = patty;
     return this;
   }
 
-  addCheese(cheese: string): this {
+  addCheese(cheese) {
     this.cheese = cheese;
     return this;
   }
 
-  addTopping(topping: string): this {
+  addTopping(topping) {
     this.toppings.push(topping);
     return this;
   }
 
-  addSauce(sauce: string): this {
+  addSauce(sauce) {
     this.sauces.push(sauce);
     return this;
   }
 
-  build(): Hamburger {
+  build() {
     return new Hamburger(
       this.bun,
       this.patty,
@@ -1053,7 +1063,7 @@ const burger = new HamburgerBuilder()
   .build();
 
 console.log(burger.describe());`,
-        language: 'typescript'
+        language: 'javascript'
       }
     ],
     realWorldExamples: [
@@ -1094,23 +1104,19 @@ console.log(burger.describe());`,
       {
         title: 'Prototype per Clonazione Oggetti',
         description: 'Sistema di clonazione per configurazioni di gioco.',
-        code: `interface Prototype {
-  clone(): Prototype;
-}
+        code: `class GameCharacter {
+  constructor(name, health, armor, weapons, skills) {
+    this.name = name;
+    this.health = health;
+    this.armor = armor;
+    this.weapons = weapons; // Array
+    this.skills = skills;   // Oggetto chiave-valore
+  }
 
-class GameCharacter implements Prototype {
-  constructor(
-    public name: string,
-    public health: number,
-    public armor: number,
-    public weapons: string[],
-    public skills: Map<string, number>
-  ) {}
-
-  clone(): GameCharacter {
-    // Deep clone degli array e Map
+  clone() {
+    // Deep clone degli array e oggetti
     const clonedWeapons = [...this.weapons];
-    const clonedSkills = new Map(this.skills);
+    const clonedSkills = { ...this.skills };
     
     return new GameCharacter(
       this.name,
@@ -1121,7 +1127,7 @@ class GameCharacter implements Prototype {
     );
   }
 
-  display(): string {
+  display() {
     return \`\${this.name}: HP=\${this.health}, Armor=\${this.armor}\`;
   }
 }
@@ -1132,7 +1138,7 @@ const warriorPrototype = new GameCharacter(
   100,
   50,
   ['Sword', 'Shield'],
-  new Map([['Strength', 10], ['Defense', 8]])
+  { Strength: 10, Defense: 8 }
 );
 
 const magePrototype = new GameCharacter(
@@ -1140,7 +1146,7 @@ const magePrototype = new GameCharacter(
   70,
   20,
   ['Staff', 'Spellbook'],
-  new Map([['Intelligence', 10], ['Mana', 100]])
+  { Intelligence: 10, Mana: 100 }
 );
 
 // Creazione di nuovi personaggi clonando i prototipi
@@ -1149,7 +1155,7 @@ player1.name = 'Aragorn';
 
 const player2 = magePrototype.clone();
 player2.name = 'Gandalf';
-player2.skills.set('Wisdom', 15);
+player2.skills.Wisdom = 15;
 
 console.log(player1.display());
 console.log(player2.display());
@@ -1157,7 +1163,7 @@ console.log(player2.display());
 // I prototipi originali non sono stati modificati
 console.log(warriorPrototype.display());
 console.log(magePrototype.display());`,
-        language: 'typescript'
+        language: 'javascript'
       },
       {
         title: 'Prototype con Object.create (JavaScript)',
@@ -1229,20 +1235,1311 @@ console.log(car2.wheels); // 6`,
     problem: 'Hai bisogno di usare una classe esistente, ma la sua interfaccia non è compatibile con il resto del tuo codice.',
     solution: 'Creare una classe adapter che funge da wrapper, traducendo le chiamate dal client all\'interfaccia della classe esistente.',
     structure: 'Client chiama metodi su Adapter, che delega le chiamate a Adaptee con interfaccia incompatibile.',
-    participants: ['Target', 'Adapter', 'Adaptee', 'Client'],
-    codeExamples: [],
-    realWorldExamples: [
-      'Integrazione API di terze parti',
-      'Legacy code integration',
-      'Database adapters',
-      'Payment gateway adapters'
+    participants: [
+      'Target - interfaccia che il client si aspetta',
+      'Adapter - adatta Adaptee all\'interfaccia Target',
+      'Adaptee - classe esistente con interfaccia incompatibile',
+      'Client - collabora con oggetti che rispettano l\'interfaccia Target'
     ],
-    whenToUse: ['Quando vuoi usare una classe esistente ma la sua interfaccia non corrisponde'],
-    whenNotToUse: ['Quando puoi modificare direttamente la classe originale'],
-    relatedPatterns: ['Bridge', 'Decorator', 'Proxy']
+    codeExamples: [
+      {
+        title: 'Adapter per API di Pagamento',
+        description: 'Adattamento di diverse API di pagamento (Stripe, PayPal) a un\'interfaccia comune.',
+        code: `// Sistema esistente che usa PayPal (Adaptee)
+class PayPalAPI {
+  constructor() {
+    this.connected = false;
+  }
+
+  connect(apiKey) {
+    console.log('Connessione a PayPal con API key:', apiKey);
+    this.connected = true;
+  }
+
+  sendPayment(amount, email) {
+    if (!this.connected) {
+      throw new Error('Non connesso a PayPal');
+    }
+    console.log(\`Pagamento PayPal di $\${amount} inviato a \${email}\`);
+    return { success: true, transactionId: 'PP-' + Date.now() };
+  }
+}
+
+// Nuova libreria Stripe (Adaptee)
+class StripeAPI {
+  constructor(apiKey) {
+    console.log('Stripe inizializzato con API key:', apiKey);
+    this.apiKey = apiKey;
+  }
+
+  charge(cents, token) {
+    console.log(\`Stripe charge di \${cents/100} dollari con token \${token}\`);
+    return { id: 'ch_' + Date.now(), status: 'succeeded' };
+  }
+}
+
+// Interfaccia comune che vogliamo usare (Target)
+class PaymentProcessor {
+  processPayment(amount, destination) {
+    throw new Error('processPayment() deve essere implementato');
+  }
+}
+
+// Adapter per PayPal
+class PayPalAdapter extends PaymentProcessor {
+  constructor(apiKey) {
+    super();
+    this.paypal = new PayPalAPI();
+    this.paypal.connect(apiKey);
+  }
+
+  processPayment(amount, destination) {
+    return this.paypal.sendPayment(amount, destination);
+  }
+}
+
+// Adapter per Stripe
+class StripeAdapter extends PaymentProcessor {
+  constructor(apiKey) {
+    super();
+    this.stripe = new StripeAPI(apiKey);
+  }
+
+  processPayment(amount, destination) {
+    const cents = amount * 100;
+    return this.stripe.charge(cents, destination);
+  }
+}
+
+// Client code - usa interfaccia uniforme
+function checkout(processor, amount, destination) {
+  console.log(\`\\nProcessing checkout...\`);
+  const result = processor.processPayment(amount, destination);
+  console.log('Result:', result);
+}
+
+// Utilizzo
+const paypalProcessor = new PayPalAdapter('paypal-key-123');
+const stripeProcessor = new StripeAdapter('stripe-key-456');
+
+checkout(paypalProcessor, 50, 'user@example.com');
+checkout(stripeProcessor, 75, 'tok_visa');`,
+        language: 'javascript'
+      },
+      {
+        title: 'Adapter per Legacy Database',
+        description: 'Adattamento di vecchio sistema di storage XML a nuova interfaccia JSON.',
+        code: `// Sistema legacy - legge/scrive XML (Adaptee)
+class XMLDatabase {
+  readXML(filePath) {
+    console.log(\`Lettura XML da \${filePath}\`);
+    return '<users><user id="1"><name>Alice</name></user></users>';
+  }
+
+  writeXML(filePath, xmlData) {
+    console.log(\`Scrittura XML in \${filePath}:\`, xmlData);
+  }
+}
+
+// Nuovo sistema - vuole JSON
+class ModernApp {
+  loadData(database) {
+    const data = database.read('users');
+    console.log('Data loaded:', data);
+    return data;
+  }
+
+  saveData(database, data) {
+    database.write('users', data);
+  }
+}
+
+// Adapter: converte XML ⇄ JSON
+class XMLToJSONAdapter {
+  constructor() {
+    this.xmlDb = new XMLDatabase();
+  }
+
+  read(resource) {
+    const xml = this.xmlDb.readXML(\`/data/\${resource}.xml\`);
+    
+    // Conversione semplificata XML → JSON
+    const json = this.parseXMLtoJSON(xml);
+    return json;
+  }
+
+  write(resource, jsonData) {
+    // Conversione JSON → XML
+    const xml = this.parseJSONtoXML(jsonData);
+    this.xmlDb.writeXML(\`/data/\${resource}.xml\`, xml);
+  }
+
+  parseXMLtoJSON(xml) {
+    // Simulazione conversione
+    return [{ id: 1, name: 'Alice' }];
+  }
+
+  parseJSONtoXML(json) {
+    // Simulazione conversione
+    return '<users><user id="1"><name>Alice</name></user></users>';
+  }
+}
+
+// Utilizzo
+const app = new ModernApp();
+const adapter = new XMLToJSONAdapter();
+
+app.loadData(adapter);
+app.saveData(adapter, [{ id: 2, name: 'Bob' }]);`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'Integrazione API di terze parti (Stripe, PayPal, AWS SDK)',
+      'Legacy code integration (adattamento vecchio codice a nuove interfacce)',
+      'Database adapters (MySQL, PostgreSQL, MongoDB)',
+      'Logger adapters (Winston, Log4j, console)',
+      'Media player adapters (formati audio/video diversi)'
+    ],
+    whenToUse: [
+      'Quando vuoi usare una classe esistente ma la sua interfaccia non corrisponde',
+      'Quando vuoi creare una classe riutilizzabile che coopera con classi incompatibili',
+      'Quando hai bisogno di usare più sottoclassi ma è impraticabile adattarle tutte',
+      'Quando vuoi integrare librerie di terze parti con interfacce diverse'
+    ],
+    whenNotToUse: [
+      'Quando puoi modificare direttamente la classe originale',
+      'Quando l\'adattamento è troppo complesso e introduce troppa logica',
+      'Quando ci sono troppe conversioni di dati costose'
+    ],
+    relatedPatterns: ['Bridge', 'Decorator', 'Proxy', 'Facade']
   },
 
-  // Aggiungeremo tutti gli altri 17 pattern nei prossimi step
+  'bridge': {
+    id: 'bridge',
+    name: 'Bridge',
+    category: 'structural',
+    intent: 'Separare un\'astrazione dalla sua implementazione in modo che possano variare indipendentemente.',
+    problem: 'Quando hai una gerarchia di classi che cresce in due dimensioni indipendenti (es. forme e colori), finisci con una esplosione di sottoclassi.',
+    solution: 'Dividere la gerarchia in due gerarchie separate: astrazione e implementazione. L\'astrazione contiene un riferimento all\'implementazione e delega il lavoro ad essa.',
+    structure: 'Abstraction usa Implementor interface. RefinedAbstraction estende Abstraction. ConcreteImplementor implementa Implementor.',
+    participants: [
+      'Abstraction - definisce l\'interfaccia di astrazione e mantiene riferimento a Implementor',
+      'RefinedAbstraction - estende l\'interfaccia definita da Abstraction',
+      'Implementor - interfaccia per le classi di implementazione',
+      'ConcreteImplementor - implementa l\'interfaccia Implementor'
+    ],
+    codeExamples: [
+      {
+        title: 'Bridge per Dispositivi e Telecomandi',
+        description: 'Separazione tra dispositivi (TV, Radio) e telecomandi (Base, Avanzato).',
+        code: `// Implementor - interfaccia dispositivi
+class Device {
+  isEnabled() {
+    throw new Error('isEnabled() must be implemented');
+  }
+  enable() {
+    throw new Error('enable() must be implemented');
+  }
+  disable() {
+    throw new Error('disable() must be implemented');
+  }
+  getVolume() {
+    throw new Error('getVolume() must be implemented');
+  }
+  setVolume(percent) {
+    throw new Error('setVolume() must be implemented');
+  }
+}
+
+// Concrete Implementors
+class TV extends Device {
+  constructor() {
+    super();
+    this.on = false;
+    this.volume = 50;
+  }
+
+  isEnabled() {
+    return this.on;
+  }
+
+  enable() {
+    this.on = true;
+    console.log('📺 TV is now ON');
+  }
+
+  disable() {
+    this.on = false;
+    console.log('📺 TV is now OFF');
+  }
+
+  getVolume() {
+    return this.volume;
+  }
+
+  setVolume(percent) {
+    this.volume = percent;
+    console.log(\`📺 TV volume set to \${percent}%\`);
+  }
+}
+
+class Radio extends Device {
+  constructor() {
+    super();
+    this.on = false;
+    this.volume = 30;
+  }
+
+  isEnabled() {
+    return this.on;
+  }
+
+  enable() {
+    this.on = true;
+    console.log('📻 Radio is now ON');
+  }
+
+  disable() {
+    this.on = false;
+    console.log('📻 Radio is now OFF');
+  }
+
+  getVolume() {
+    return this.volume;
+  }
+
+  setVolume(percent) {
+    this.volume = percent;
+    console.log(\`📻 Radio volume set to \${percent}%\`);
+  }
+}
+
+// Abstraction - telecomando base
+class RemoteControl {
+  constructor(device) {
+    this.device = device;
+  }
+
+  togglePower() {
+    if (this.device.isEnabled()) {
+      this.device.disable();
+    } else {
+      this.device.enable();
+    }
+  }
+
+  volumeDown() {
+    const currentVolume = this.device.getVolume();
+    this.device.setVolume(currentVolume - 10);
+  }
+
+  volumeUp() {
+    const currentVolume = this.device.getVolume();
+    this.device.setVolume(currentVolume + 10);
+  }
+}
+
+// Refined Abstraction - telecomando avanzato
+class AdvancedRemoteControl extends RemoteControl {
+  mute() {
+    console.log('🔇 Muting device...');
+    this.device.setVolume(0);
+  }
+
+  setChannel(channel) {
+    console.log(\`📡 Setting channel to \${channel}\`);
+  }
+}
+
+// Utilizzo: le due gerarchie variano indipendentemente
+const tv = new TV();
+const radio = new Radio();
+
+const tvRemote = new RemoteControl(tv);
+tvRemote.togglePower();
+tvRemote.volumeUp();
+
+const radioRemote = new AdvancedRemoteControl(radio);
+radioRemote.togglePower();
+radioRemote.mute();`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'GUI frameworks - separazione tra widget e rendering engine (Windows/Linux/Mac)',
+      'Database drivers - separazione tra API e implementazione specifica del DB',
+      'Dispositivi e controller - telecomandi, stampanti, dispositivi IoT',
+      'Messaging systems - separazione tra sender/receiver e protocollo (SMTP, SMS, Push)'
+    ],
+    whenToUse: [
+      'Quando vuoi evitare un legame permanente tra astrazione e implementazione',
+      'Quando sia astrazione che implementazione devono essere estensibili tramite sottoclassi',
+      'Quando cambiamenti nell\'implementazione non devono impattare i client',
+      'Quando hai una proliferazione di classi dovuta a combinazioni multiple'
+    ],
+    whenNotToUse: [
+      'Quando hai una sola implementazione',
+      'Quando l\'astrazione e implementazione sono strettamente accoppiate',
+      'Quando la complessità aggiunta non è giustificata'
+    ],
+    relatedPatterns: ['Adapter', 'Abstract Factory', 'Strategy']
+  },
+
+  'composite': {
+    id: 'composite',
+    name: 'Composite',
+    category: 'structural',
+    intent: 'Comporre oggetti in strutture ad albero per rappresentare gerarchie parte-tutto. Composite permette ai client di trattare uniformemente oggetti singoli e composizioni di oggetti.',
+    problem: 'Quando hai una struttura ad albero di oggetti e vuoi che i client trattino foglie e compositi allo stesso modo.',
+    solution: 'Definire un\'interfaccia comune per oggetti semplici (foglie) e contenitori (compositi). I compositi contengono collezioni di componenti e delegano operazioni a loro.',
+    structure: 'Component interface, Leaf implementa Component, Composite contiene lista di Component e implementa operazioni delegando ai figli.',
+    participants: [
+      'Component - interfaccia comune per oggetti nella composizione',
+      'Leaf - oggetto foglia senza figli',
+      'Composite - componente con figli, implementa comportamenti relativi ai figli',
+      'Client - manipola oggetti tramite interfaccia Component'
+    ],
+    codeExamples: [
+      {
+        title: 'Composite per File System',
+        description: 'Rappresentazione di file e cartelle in una struttura ad albero.',
+        code: `// Component - interfaccia comune
+class FileSystemItem {
+  getName() {
+    throw new Error('getName() must be implemented');
+  }
+
+  getSize() {
+    throw new Error('getSize() must be implemented');
+  }
+
+  display(indent = 0) {
+    throw new Error('display() must be implemented');
+  }
+}
+
+// Leaf - File singolo
+class File extends FileSystemItem {
+  constructor(name, size) {
+    super();
+    this.name = name;
+    this.size = size;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  getSize() {
+    return this.size;
+  }
+
+  display(indent = 0) {
+    const spaces = ' '.repeat(indent);
+    console.log(\`\${spaces}📄 \${this.name} (\${this.size}KB)\`);
+  }
+}
+
+// Composite - Cartella che può contenere file e altre cartelle
+class Folder extends FileSystemItem {
+  constructor(name) {
+    super();
+    this.name = name;
+    this.children = [];
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  add(item) {
+    this.children.push(item);
+  }
+
+  remove(item) {
+    const index = this.children.indexOf(item);
+    if (index > -1) {
+      this.children.splice(index, 1);
+    }
+  }
+
+  getSize() {
+    // Dimensione totale = somma dimensioni figli
+    return this.children.reduce((total, child) => {
+      return total + child.getSize();
+    }, 0);
+  }
+
+  display(indent = 0) {
+    const spaces = ' '.repeat(indent);
+    console.log(\`\${spaces}📁 \${this.name}/ (\${this.getSize()}KB total)\`);
+    
+    // Mostra tutti i figli
+    this.children.forEach(child => {
+      child.display(indent + 2);
+    });
+  }
+}
+
+// Costruzione della struttura ad albero
+const root = new Folder('root');
+
+const documents = new Folder('documents');
+documents.add(new File('report.pdf', 150));
+documents.add(new File('presentation.pptx', 300));
+
+const images = new Folder('images');
+images.add(new File('photo1.jpg', 200));
+images.add(new File('photo2.jpg', 180));
+
+const videos = new Folder('videos');
+videos.add(new File('tutorial.mp4', 5000));
+
+root.add(documents);
+root.add(images);
+root.add(videos);
+root.add(new File('readme.txt', 5));
+
+// Client tratta file e cartelle allo stesso modo
+console.log('File System Structure:');
+root.display();
+console.log(\`\\nTotal size: \${root.getSize()}KB\`);`,
+        language: 'javascript'
+      },
+      {
+        title: 'Composite per UI Components',
+        description: 'Componenti UI annidati (box, panel, button) che possono essere renderizzati.',
+        code: `// Component interface
+class UIComponent {
+  render() {
+    throw new Error('render() must be implemented');
+  }
+}
+
+// Leaf - Button
+class Button extends UIComponent {
+  constructor(text) {
+    super();
+    this.text = text;
+  }
+
+  render() {
+    console.log(\`  <button>\${this.text}</button>\`);
+  }
+}
+
+// Leaf - Input
+class Input extends UIComponent {
+  constructor(placeholder) {
+    super();
+    this.placeholder = placeholder;
+  }
+
+  render() {
+    console.log(\`  <input placeholder="\${this.placeholder}" />\`);
+  }
+}
+
+// Composite - Panel che contiene altri componenti
+class Panel extends UIComponent {
+  constructor(title) {
+    super();
+    this.title = title;
+    this.components = [];
+  }
+
+  add(component) {
+    this.components.push(component);
+  }
+
+  remove(component) {
+    const index = this.components.indexOf(component);
+    if (index > -1) {
+      this.components.splice(index, 1);
+    }
+  }
+
+  render() {
+    console.log(\`<div class="panel">\`);
+    console.log(\`  <h3>\${this.title}</h3>\`);
+    
+    // Renderizza tutti i componenti figli
+    this.components.forEach(component => {
+      component.render();
+    });
+    
+    console.log('</div>');
+  }
+}
+
+// Costruzione UI complessa
+const loginForm = new Panel('Login Form');
+loginForm.add(new Input('Username'));
+loginForm.add(new Input('Password'));
+loginForm.add(new Button('Login'));
+
+const sidebar = new Panel('Sidebar');
+sidebar.add(new Button('Home'));
+sidebar.add(new Button('Profile'));
+sidebar.add(new Button('Settings'));
+
+const mainPanel = new Panel('Main Container');
+mainPanel.add(sidebar);
+mainPanel.add(loginForm);
+
+// Client renderizza l'intera struttura con una sola chiamata
+console.log('Rendering UI:');
+mainPanel.render();`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'File systems - file e cartelle',
+      'UI frameworks - componenti annidati (React, Vue components)',
+      'Organization charts - dipendenti e manager',
+      'Graphic editors - forme semplici e gruppi di forme',
+      'Menu systems - menu items e sottomenu'
+    ],
+    whenToUse: [
+      'Quando vuoi rappresentare gerarchie parte-tutto di oggetti',
+      'Quando vuoi che i client ignorino la differenza tra composizioni e oggetti singoli',
+      'Quando la struttura può avere profondità arbitraria',
+      'Quando vuoi applicare operazioni ricorsivamente su una struttura ad albero'
+    ],
+    whenNotToUse: [
+      'Quando la struttura non è naturalmente ad albero',
+      'Quando foglie e compositi hanno operazioni molto diverse',
+      'Quando la complessità della gerarchia non è necessaria'
+    ],
+    relatedPatterns: ['Iterator', 'Visitor', 'Decorator', 'Chain of Responsibility']
+  },
+
+  'decorator': {
+    id: 'decorator',
+    name: 'Decorator',
+    category: 'structural',
+    intent: 'Aggiungere responsabilità aggiuntive a un oggetto dinamicamente. I decorator forniscono un\'alternativa flessibile all\'ereditarietà per estendere funzionalità.',
+    problem: 'Estendere funzionalità tramite ereditarietà è statico e si applica a tutta la classe. Inoltre, avere molte combinazioni di funzionalità porta a una esplosione di sottoclassi.',
+    solution: 'Creare decorator che wrappano l\'oggetto originale e aggiungono nuove funzionalità. I decorator implementano la stessa interfaccia dell\'oggetto wrappato.',
+    structure: 'Component interface, ConcreteComponent implementa Component, Decorator wrappa Component e aggiunge comportamenti.',
+    participants: [
+      'Component - interfaccia comune per oggetti che possono avere responsabilità aggiunte',
+      'ConcreteComponent - oggetto a cui possono essere aggiunte responsabilità',
+      'Decorator - mantiene riferimento a Component e implementa interfaccia Component',
+      'ConcreteDecorator - aggiunge responsabilità al componente'
+    ],
+    codeExamples: [
+      {
+        title: 'Decorator per Coffee Shop',
+        description: 'Aggiunta dinamica di ingredienti extra a bevande con calcolo del prezzo.',
+        code: `// Component - interfaccia bevanda
+class Beverage {
+  getDescription() {
+    return 'Unknown Beverage';
+  }
+
+  cost() {
+    return 0;
+  }
+}
+
+// Concrete Components - bevande base
+class Espresso extends Beverage {
+  getDescription() {
+    return 'Espresso';
+  }
+
+  cost() {
+    return 1.99;
+  }
+}
+
+class HouseBlend extends Beverage {
+  getDescription() {
+    return 'House Blend Coffee';
+  }
+
+  cost() {
+    return 0.89;
+  }
+}
+
+// Decorator base
+class CondimentDecorator extends Beverage {
+  constructor(beverage) {
+    super();
+    this.beverage = beverage;
+  }
+}
+
+// Concrete Decorators - ingredienti extra
+class Milk extends CondimentDecorator {
+  getDescription() {
+    return this.beverage.getDescription() + ', Milk';
+  }
+
+  cost() {
+    return this.beverage.cost() + 0.10;
+  }
+}
+
+class Mocha extends CondimentDecorator {
+  getDescription() {
+    return this.beverage.getDescription() + ', Mocha';
+  }
+
+  cost() {
+    return this.beverage.cost() + 0.20;
+  }
+}
+
+class Whip extends CondimentDecorator {
+  getDescription() {
+    return this.beverage.getDescription() + ', Whip';
+  }
+
+  cost() {
+    return this.beverage.cost() + 0.15;
+  }
+}
+
+// Utilizzo: wrapping multiplo per combinare funzionalità
+let beverage1 = new Espresso();
+console.log(\`\${beverage1.getDescription()} $\${beverage1.cost()}\`);
+
+let beverage2 = new HouseBlend();
+beverage2 = new Milk(beverage2);
+beverage2 = new Mocha(beverage2);
+beverage2 = new Whip(beverage2);
+console.log(\`\${beverage2.getDescription()} $\${beverage2.cost()}\`);
+
+// Output:
+// Espresso $1.99
+// House Blend Coffee, Milk, Mocha, Whip $1.34`,
+        language: 'javascript'
+      },
+      {
+        title: 'Decorator per Data Streams',
+        description: 'Aggiunta di funzionalità come compressione e crittografia a stream di dati.',
+        code: `// Component - interfaccia stream
+class DataStream {
+  write(data) {
+    throw new Error('write() must be implemented');
+  }
+
+  read() {
+    throw new Error('read() must be implemented');
+  }
+}
+
+// Concrete Component - stream base
+class FileStream extends DataStream {
+  constructor() {
+    super();
+    this.data = '';
+  }
+
+  write(data) {
+    this.data = data;
+    console.log(\`📝 Writing to file: "\${data}"\`);
+  }
+
+  read() {
+    console.log(\`📖 Reading from file: "\${this.data}"\`);
+    return this.data;
+  }
+}
+
+// Decorators
+class CompressionDecorator extends DataStream {
+  constructor(stream) {
+    super();
+    this.stream = stream;
+  }
+
+  write(data) {
+    const compressed = this.compress(data);
+    console.log(\`🗜️  Compressing data: "\${data}" → "\${compressed}"\`);
+    this.stream.write(compressed);
+  }
+
+  read() {
+    const data = this.stream.read();
+    const decompressed = this.decompress(data);
+    console.log(\`📦 Decompressing: "\${data}" → "\${decompressed}"\`);
+    return decompressed;
+  }
+
+  compress(data) {
+    return data.split('').reverse().join(''); // Simulazione
+  }
+
+  decompress(data) {
+    return data.split('').reverse().join('');
+  }
+}
+
+class EncryptionDecorator extends DataStream {
+  constructor(stream) {
+    super();
+    this.stream = stream;
+  }
+
+  write(data) {
+    const encrypted = this.encrypt(data);
+    console.log(\`🔒 Encrypting data: "\${data}" → "\${encrypted}"\`);
+    this.stream.write(encrypted);
+  }
+
+  read() {
+    const data = this.stream.read();
+    const decrypted = this.decrypt(data);
+    console.log(\`🔓 Decrypting: "\${data}" → "\${decrypted}"\`);
+    return decrypted;
+  }
+
+  encrypt(data) {
+    return Buffer.from(data).toString('base64'); // Simulazione
+  }
+
+  decrypt(data) {
+    return Buffer.from(data, 'base64').toString('utf-8');
+  }
+}
+
+// Utilizzo: stack di decorators
+let stream = new FileStream();
+stream = new CompressionDecorator(stream);
+stream = new EncryptionDecorator(stream);
+
+console.log('\\n--- Writing ---');
+stream.write('Hello World');
+
+console.log('\\n--- Reading ---');
+const result = stream.read();
+console.log(\`Final result: "\${result}"\`);`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'Java I/O streams - BufferedReader, FileReader, etc.',
+      'Middleware in web frameworks - logging, authentication, caching',
+      'UI components - scrollbars, borders, shadows',
+      'Text formatting - bold, italic, underline',
+      'HTTP requests - retry logic, caching, logging'
+    ],
+    whenToUse: [
+      'Quando vuoi aggiungere responsabilità a oggetti singoli dinamicamente',
+      'Quando l\'ereditarietà non è praticabile (troppi comportamenti da combinare)',
+      'Quando vuoi che le responsabilità siano revocabili',
+      'Quando estendere funzionalità tramite sottoclassi è impraticabile'
+    ],
+    whenNotToUse: [
+      'Quando hai bisogno di modificare l\'interfaccia dell\'oggetto',
+      'Quando la catena di decorator diventa troppo complessa',
+      'Quando bastano semplici flag booleani per configurare comportamenti'
+    ],
+    relatedPatterns: ['Adapter', 'Composite', 'Strategy', 'Proxy']
+  },
+
+  'facade': {
+    id: 'facade',
+    name: 'Facade',
+    category: 'structural',
+    intent: 'Fornire un\'interfaccia unificata a un insieme di interfacce in un sottosistema. Facade definisce un\'interfaccia di livello superiore che rende il sottosistema più facile da usare.',
+    problem: 'Quando lavori con librerie complesse o sottosistemi con molte classi interdipendenti, il codice client diventa complicato e fortemente accoppiato.',
+    solution: 'Creare una classe facade che fornisce un\'interfaccia semplice per le operazioni comuni del sottosistema. Il facade delega le chiamate agli oggetti appropriati del sottosistema.',
+    structure: 'Facade fornisce metodi semplici che delegano a classi del sottosistema complesso. Client usa solo Facade invece di interagire direttamente con il sottosistema.',
+    participants: [
+      'Facade - conosce quali classi del sottosistema sono responsabili per una richiesta',
+      'Subsystem classes - implementano funzionalità del sottosistema, gestite da Facade',
+      'Client - usa Facade invece di chiamare direttamente le classi del sottosistema'
+    ],
+    codeExamples: [
+      {
+        title: 'Facade per Home Theater System',
+        description: 'Semplificazione dell\'interfaccia per un sistema home theater complesso.',
+        code: `// Sottosistema complesso - molte classi interdipendenti
+class Amplifier {
+  on() {
+    console.log('🔊 Amplifier on');
+  }
+
+  off() {
+    console.log('🔊 Amplifier off');
+  }
+
+  setVolume(level) {
+    console.log(\`🔊 Amplifier volume set to \${level}\`);
+  }
+}
+
+class DVDPlayer {
+  on() {
+    console.log('💿 DVD Player on');
+  }
+
+  off() {
+    console.log('💿 DVD Player off');
+  }
+
+  play(movie) {
+    console.log(\`💿 Playing "\${movie}"\`);
+  }
+
+  stop() {
+    console.log('💿 DVD Player stopped');
+  }
+}
+
+class Projector {
+  on() {
+    console.log('📽️  Projector on');
+  }
+
+  off() {
+    console.log('📽️  Projector off');
+  }
+
+  wideScreenMode() {
+    console.log('📽️  Projector in widescreen mode (16:9)');
+  }
+}
+
+class Lights {
+  dim(level) {
+    console.log(\`💡 Lights dimmed to \${level}%\`);
+  }
+
+  on() {
+    console.log('💡 Lights on');
+  }
+}
+
+// ❌ SENZA FACADE: Client deve gestire tutto manualmente
+function watchMovieWithoutFacade(movie) {
+  console.log('\\n--- Manual Setup (Without Facade) ---');
+  const amp = new Amplifier();
+  const dvd = new DVDPlayer();
+  const projector = new Projector();
+  const lights = new Lights();
+
+  lights.dim(10);
+  projector.on();
+  projector.wideScreenMode();
+  amp.on();
+  amp.setVolume(5);
+  dvd.on();
+  dvd.play(movie);
+}
+
+// ✅ CON FACADE: Interfaccia semplificata
+class HomeTheaterFacade {
+  constructor(amp, dvd, projector, lights) {
+    this.amp = amp;
+    this.dvd = dvd;
+    this.projector = projector;
+    this.lights = lights;
+  }
+
+  watchMovie(movie) {
+    console.log(\`\\n🎬 Get ready to watch "\${movie}"...\`);
+    this.lights.dim(10);
+    this.projector.on();
+    this.projector.wideScreenMode();
+    this.amp.on();
+    this.amp.setVolume(5);
+    this.dvd.on();
+    this.dvd.play(movie);
+    console.log('✅ Enjoy your movie!\\n');
+  }
+
+  endMovie() {
+    console.log('\\n🎬 Shutting down home theater...');
+    this.dvd.stop();
+    this.dvd.off();
+    this.amp.off();
+    this.projector.off();
+    this.lights.on();
+    console.log('✅ Home theater shut down\\n');
+  }
+}
+
+// Client usa facade - molto più semplice!
+const homeTheater = new HomeTheaterFacade(
+  new Amplifier(),
+  new DVDPlayer(),
+  new Projector(),
+  new Lights()
+);
+
+homeTheater.watchMovie('The Matrix');
+homeTheater.endMovie();`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'Librerie complesse - jQuery è un facade per DOM API',
+      'Framework - Express.js semplifica Node.js HTTP server',
+      'Database ORM - Sequelize/TypeORM nascondono complessità SQL',
+      'Payment gateways - interfaccia semplice per sistemi di pagamento complessi',
+      'Cloud services - SDK che semplificano API complesse (AWS SDK)'
+    ],
+    whenToUse: [
+      'Quando vuoi fornire interfaccia semplice a sottosistema complesso',
+      'Quando ci sono molte dipendenze tra client e classi di implementazione',
+      'Quando vuoi stratificare i sottosistemi',
+      'Quando vuoi ridurre accoppiamento tra sottosistemi e client'
+    ],
+    whenNotToUse: [
+      'Quando il sottosistema è già semplice',
+      'Quando i client hanno bisogno di accesso diretto a funzionalità avanzate',
+      'Quando il facade diventa un "god object" con troppe responsabilità'
+    ],
+    relatedPatterns: ['Abstract Factory', 'Mediator', 'Singleton']
+  },
+
+  'flyweight': {
+    id: 'flyweight',
+    name: 'Flyweight',
+    category: 'structural',
+    intent: 'Usare condivisione per supportare efficientemente un grande numero di oggetti a grana fine.',
+    problem: 'Creare un grande numero di oggetti simili consuma troppa memoria. Molti oggetti contengono dati duplicati.',
+    solution: 'Estrarre lo stato condiviso (intrinseco) dagli oggetti e memorizzarlo in un pool di flyweight. Lo stato variabile (estrinseco) viene passato ai metodi quando necessario.',
+    structure: 'Flyweight contiene stato intrinseco condiviso, FlyweightFactory gestisce pool di flyweight, Client mantiene stato estrinseco.',
+    participants: [
+      'Flyweight - interfaccia per flyweight che riceve e agisce su stato estrinseco',
+      'ConcreteFlyweight - implementa interfaccia e memorizza stato intrinseco',
+      'FlyweightFactory - crea e gestisce oggetti flyweight, assicura condivisione',
+      'Client - mantiene riferimenti a flyweight e calcola/memorizza stato estrinseco'
+    ],
+    codeExamples: [
+      {
+        title: 'Flyweight per Forest Rendering',
+        description: 'Rendering efficiente di migliaia di alberi in una foresta condividendo mesh e texture.',
+        code: `// Flyweight - stato intrinseco condiviso (tipo albero)
+class TreeType {
+  constructor(name, color, texture) {
+    this.name = name;
+    this.color = color;
+    this.texture = texture;
+    console.log(\`🌲 Creating TreeType: \${name} (shared)\`);
+  }
+
+  draw(x, y) {
+    console.log(\`Drawing \${this.name} tree at (\${x}, \${y}) with \${this.color} color\`);
+  }
+}
+
+// Flyweight Factory - gestisce pool di flyweight
+class TreeFactory {
+  constructor() {
+    this.treeTypes = {};
+  }
+
+  getTreeType(name, color, texture) {
+    const key = \`\${name}_\${color}_\${texture}\`;
+    
+    if (!this.treeTypes[key]) {
+      this.treeTypes[key] = new TreeType(name, color, texture);
+    } else {
+      console.log(\`♻️  Reusing existing TreeType: \${name}\`);
+    }
+    
+    return this.treeTypes[key];
+  }
+
+  getTreeTypeCount() {
+    return Object.keys(this.treeTypes).length;
+  }
+}
+
+// Context - stato estrinseco (posizione unica di ogni albero)
+class Tree {
+  constructor(x, y, treeType) {
+    this.x = x;
+    this.y = y;
+    this.treeType = treeType; // Riferimento a flyweight condiviso
+  }
+
+  draw() {
+    this.treeType.draw(this.x, this.y);
+  }
+}
+
+// Forest - gestisce migliaia di alberi
+class Forest {
+  constructor() {
+    this.trees = [];
+    this.factory = new TreeFactory();
+  }
+
+  plantTree(x, y, name, color, texture) {
+    const type = this.factory.getTreeType(name, color, texture);
+    const tree = new Tree(x, y, type);
+    this.trees.push(tree);
+  }
+
+  draw() {
+    console.log(\`\\n🌳 Drawing \${this.trees.length} trees:\`);
+    this.trees.forEach(tree => tree.draw());
+  }
+
+  getMemoryUsage() {
+    const treeTypeCount = this.factory.getTreeTypeCount();
+    const treeCount = this.trees.length;
+    console.log(\`\\n📊 Memory Statistics:\`);
+    console.log(\`  Total trees: \${treeCount}\`);
+    console.log(\`  Unique tree types (flyweights): \${treeTypeCount}\`);
+    console.log(\`  Memory saved: \${((1 - treeTypeCount/treeCount) * 100).toFixed(1)}%\`);
+  }
+}
+
+// Utilizzo: planting di migliaia di alberi
+const forest = new Forest();
+
+// Piantare 10000 alberi di soli 3 tipi
+for (let i = 0; i < 3333; i++) {
+  forest.plantTree(Math.random() * 1000, Math.random() * 1000, 'Oak', 'Green', 'Oak_texture');
+}
+for (let i = 0; i < 3333; i++) {
+  forest.plantTree(Math.random() * 1000, Math.random() * 1000, 'Pine', 'Dark Green', 'Pine_texture');
+}
+for (let i = 0; i < 3334; i++) {
+  forest.plantTree(Math.random() * 1000, Math.random() * 1000, 'Birch', 'White', 'Birch_texture');
+}
+
+forest.getMemoryUsage();
+// Invece di 10000 oggetti TreeType, abbiamo solo 3!`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'Text editors - condivisione di character glyphs',
+      'Game development - sprite sharing per particles, bullets, enemies',
+      'UI frameworks - condivisione di icon/image resources',
+      'String pooling - Java String interning',
+      'Database connection pooling - riuso di connessioni'
+    ],
+    whenToUse: [
+      'Quando hai un grande numero di oggetti simili',
+      'Quando la memoria è una preoccupazione critica',
+      'Quando la maggior parte dello stato può essere estrinseco',
+      'Quando l\'identità degli oggetti non è importante'
+    ],
+    whenNotToUse: [
+      'Quando hai pochi oggetti',
+      'Quando lo stato è prevalentemente estrinseco',
+      'Quando la complessità aggiunta non giustifica il risparmio di memoria'
+    ],
+    relatedPatterns: ['Composite', 'State', 'Strategy']
+  },
+
+  'proxy': {
+    id: 'proxy',
+    name: 'Proxy',
+    category: 'structural',
+    intent: 'Fornire un surrogato o segnaposto per un altro oggetto per controllarne l\'accesso.',
+    problem: 'Vuoi aggiungere controllo di accesso, lazy loading, caching, o logging a un oggetto senza modificare il suo codice.',
+    solution: 'Creare una classe proxy che implementa la stessa interfaccia dell\'oggetto reale e contiene un riferimento ad esso. Il proxy intercetta chiamate e può aggiungere logica prima/dopo aver delegato all\'oggetto reale.',
+    structure: 'Subject interface, RealSubject implementa Subject, Proxy implementa Subject e mantiene riferimento a RealSubject.',
+    participants: [
+      'Subject - interfaccia comune per RealSubject e Proxy',
+      'RealSubject - oggetto reale rappresentato dal proxy',
+      'Proxy - mantiene riferimento a RealSubject e controlla accesso ad esso',
+      'Client - lavora con Subject tramite interfaccia'
+    ],
+    codeExamples: [
+      {
+        title: 'Proxy per Image Loading (Virtual Proxy)',
+        description: 'Lazy loading di immagini pesanti - caricamento solo quando necessario.',
+        code: `// Subject interface
+class Image {
+  display() {
+    throw new Error('display() must be implemented');
+  }
+}
+
+// RealSubject - immagine reale (pesante da caricare)
+class RealImage extends Image {
+  constructor(filename) {
+    super();
+    this.filename = filename;
+    this.loadFromDisk();
+  }
+
+  loadFromDisk() {
+    console.log(\`📥 Loading image from disk: \${this.filename}\`);
+    console.log('   ... reading file ...');
+    console.log('   ... decoding pixels ...');
+    console.log(\`✅ Image loaded: \${this.filename}\`);
+  }
+
+  display() {
+    console.log(\`🖼️  Displaying: \${this.filename}\`);
+  }
+}
+
+// Proxy - lazy loading
+class ImageProxy extends Image {
+  constructor(filename) {
+    super();
+    this.filename = filename;
+    this.realImage = null; // Non caricata ancora
+  }
+
+  display() {
+    // Carica l'immagine solo quando serve (lazy loading)
+    if (!this.realImage) {
+      console.log(\`⏳ First access to \${this.filename}, loading now...\`);
+      this.realImage = new RealImage(this.filename);
+    } else {
+      console.log(\`♻️  Image already loaded: \${this.filename}\`);
+    }
+    
+    this.realImage.display();
+  }
+}
+
+// Utilizzo
+console.log('Creating image proxies (fast, no loading yet):');
+const image1 = new ImageProxy('photo1.jpg');
+const image2 = new ImageProxy('photo2.jpg');
+const image3 = new ImageProxy('photo3.jpg');
+
+console.log('\\nDisplaying image1 (triggers loading):');
+image1.display();
+
+console.log('\\nDisplaying image1 again (already loaded):');
+image1.display();
+
+console.log('\\nDisplaying image2 (triggers loading):');
+image2.display();
+
+// image3 non viene mai visualizzata, quindi non viene mai caricata!`,
+        language: 'javascript'
+      },
+      {
+        title: 'Proxy per Access Control (Protection Proxy)',
+        description: 'Controllo dell\'accesso a operazioni sensibili basato sui permessi.',
+        code: `// Subject
+class BankAccount {
+  withdraw(amount) {
+    throw new Error('withdraw() must be implemented');
+  }
+
+  deposit(amount) {
+    throw new Error('deposit() must be implemented');
+  }
+
+  getBalance() {
+    throw new Error('getBalance() must be implemented');
+  }
+}
+
+// RealSubject
+class RealBankAccount extends BankAccount {
+  constructor(initialBalance) {
+    super();
+    this.balance = initialBalance;
+  }
+
+  withdraw(amount) {
+    if (amount > this.balance) {
+      console.log(\`❌ Insufficient funds. Balance: $\${this.balance}\`);
+      return false;
+    }
+    this.balance -= amount;
+    console.log(\`💸 Withdrew $\${amount}. New balance: $\${this.balance}\`);
+    return true;
+  }
+
+  deposit(amount) {
+    this.balance += amount;
+    console.log(\`💰 Deposited $\${amount}. New balance: $\${this.balance}\`);
+  }
+
+  getBalance() {
+    return this.balance;
+  }
+}
+
+// Protection Proxy - controlla permessi
+class BankAccountProxy extends BankAccount {
+  constructor(realAccount, userRole) {
+    super();
+    this.realAccount = realAccount;
+    this.userRole = userRole;
+  }
+
+  withdraw(amount) {
+    if (this.userRole !== 'owner' && this.userRole !== 'authorized') {
+      console.log(\`🚫 Access denied: \${this.userRole} cannot withdraw\`);
+      return false;
+    }
+    return this.realAccount.withdraw(amount);
+  }
+
+  deposit(amount) {
+    // Tutti possono depositare
+    return this.realAccount.deposit(amount);
+  }
+
+  getBalance() {
+    if (this.userRole === 'guest') {
+      console.log('🚫 Access denied: guests cannot view balance');
+      return null;
+    }
+    const balance = this.realAccount.getBalance();
+    console.log(\`💵 Balance: $\${balance}\`);
+    return balance;
+  }
+}
+
+// Utilizzo
+const account = new RealBankAccount(1000);
+
+console.log('\\n--- Owner access ---');
+const ownerProxy = new BankAccountProxy(account, 'owner');
+ownerProxy.getBalance();
+ownerProxy.withdraw(100);
+
+console.log('\\n--- Guest access ---');
+const guestProxy = new BankAccountProxy(account, 'guest');
+guestProxy.getBalance(); // Negato
+guestProxy.withdraw(50);  // Negato
+guestProxy.deposit(200);  // Permesso
+
+console.log('\\n--- Auditor access ---');
+const auditorProxy = new BankAccountProxy(account, 'auditor');
+auditorProxy.getBalance(); // Permesso
+auditorProxy.withdraw(50);  // Negato`,
+        language: 'javascript'
+      }
+    ],
+    realWorldExamples: [
+      'Virtual Proxy - lazy loading di oggetti pesanti (immagini, video)',
+      'Protection Proxy - controllo accesso basato su permessi',
+      'Remote Proxy - rappresenta oggetti in spazi di indirizzamento diversi (RPC, REST API)',
+      'Caching Proxy - cache dei risultati di operazioni costose',
+      'Logging Proxy - log delle chiamate ai metodi'
+    ],
+    whenToUse: [
+      'Quando vuoi lazy initialization di oggetti pesanti',
+      'Quando vuoi controllo di accesso a un oggetto',
+      'Quando vuoi aggiungere funzionalità (logging, caching) senza modificare oggetto',
+      'Quando l\'oggetto è remoto o difficile da accedere direttamente'
+    ],
+    whenNotToUse: [
+      'Quando la complessità del proxy non è giustificata',
+      'Quando non hai bisogno di controllo sull\'accesso',
+      'Quando l\'overhead del proxy è troppo alto'
+    ],
+    relatedPatterns: ['Adapter', 'Decorator', 'Facade']
+  },
+
+  // Aggiungeremo i pattern behavioral successivamente
 };
 
 // Funzioni helper

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^2.0.1",
     "@tailwindcss/postcss": "^4.1.18",
     "antd": "^6.1.0",

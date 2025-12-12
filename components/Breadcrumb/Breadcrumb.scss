@@ -19,10 +19,14 @@
 @use 'sass:color';
 
 .breadcrumb {
+  position: sticky;
+  top: fn.rem(48); // Height of navbar
+  z-index: $z-40;
   background: linear-gradient(135deg, color.adjust($navy-dark, $lightness: 15%) 0%, color.adjust($navy-dark, $lightness: 10%) 100%);
   border-bottom: fn.rem(2) solid rgba($yellow-primary, 0.4);
   padding: fn.rem(16) 0;
   box-shadow: 0 fn.rem(4) fn.rem(12) rgba($black, 0.3);
+  backdrop-filter: blur(fn.rem(10));
   
   &__container {
     max-width: fn.rem(1280);

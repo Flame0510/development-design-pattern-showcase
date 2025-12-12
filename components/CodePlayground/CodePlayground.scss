@@ -1,0 +1,221 @@
+/**
+ * COMPONENT: CodePlayground
+ * SECTION: UI Components
+ * 
+ * ROLE:
+ * - Interactive code editor with console output
+ * - Split view layout (editor | console)
+ * - Full-screen modal for immersive experience
+ * 
+ * PATTERNS USED:
+ * - BEM naming convention
+ * - Split panel layout with flexbox
+ * - Responsive design for mobile
+ * 
+ * NOTES FOR CONTRIBUTORS:
+ * - Modal is 90vw wide for maximum space
+ * - Editor panel is 60%, console 40%
+ * - Console auto-scrolls to bottom
+ * - Use Navy + Yellow + Beige design system
+ */
+
+@use "@/styles" as *;
+@use "@/styles/functions" as fn;
+
+.code-playground-modal {
+    .ant-modal-content {
+        height: 95vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ant-modal-body {
+        flex: 1;
+        overflow: hidden;
+        padding: 0;
+    }
+}
+
+.code-playground {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    max-height: fn.rem(1000);
+    background-color: $navy-dark;
+
+    border-radius: $radius-base;
+    overflow: hidden;
+
+    &__toolbar {
+        padding: $spacing-4 $spacing-6;
+        background-color: $navy-medium;
+        border-bottom: fn.rem(2) solid $yellow-primary;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__run-button {
+        background-color: $success !important;
+        border-color: $success !important;
+        color: $white !important;
+
+        &:hover {
+            background-color: $success-dark !important;
+            border-color: $success-dark !important;
+        }
+    }
+
+    &__shortcut-hint {
+        margin-left: fn.rem(8);
+        opacity: 0.7;
+        font-size: fn.rem(12);
+    }
+
+    &__reset-button {
+        background-color: $beige-card !important;
+        border-color: $navy-light !important;
+        color: $navy-dark !important;
+
+        &:hover {
+            background-color: $beige-light !important;
+            border-color: $yellow-primary !important;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+
+        @include respond-below(lg) {
+            flex-direction: column;
+        }
+    }
+
+    &__editor-panel {
+        flex: 0 0 60%;
+        background-color: #1e1e1e;
+        overflow: hidden;
+
+        @include respond-below(lg) {
+            flex: 0 0 50%;
+        }
+    }
+
+    &__console-panel {
+        flex: 0 0 40%;
+        background-color: $navy-medium;
+        border-left: fn.rem(2) solid $navy-light;
+        display: flex;
+        flex-direction: column;
+
+        @include respond-below(lg) {
+            flex: 0 0 50%;
+            border-left: none;
+            border-top: fn.rem(2) solid $navy-light;
+        }
+    }
+}
+
+// Playground Editor
+.playground-editor {
+    height: 100%;
+    width: 100%;
+}
+
+// Playground Console
+.playground-console {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &__header {
+        padding: $spacing-4 $spacing-6;
+        background-color: $navy-dark;
+        border-bottom: fn.rem(1) solid $navy-light;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__title {
+        color: $yellow-primary;
+        font-weight: $weight-semibold;
+        font-size: fn.rem(14);
+        text-transform: uppercase;
+        letter-spacing: fn.rem(0.5);
+    }
+
+    &__clear-button {
+        color: $gray-400 !important;
+
+        &:hover {
+            color: $white !important;
+            background-color: $navy-light !important;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        overflow-y: auto;
+        padding: $spacing-4;
+        font-family: $font-mono;
+        font-size: fn.rem(13);
+        line-height: 1.6;
+
+        @include custom-scrollbar;
+    }
+
+    &__empty {
+        margin-top: $spacing-12;
+
+        .ant-empty-description {
+            color: $gray-500;
+        }
+    }
+
+    &__log {
+        display: flex;
+        gap: $spacing-2;
+        padding: $spacing-2 $spacing-3;
+        margin-bottom: $spacing-2;
+        border-radius: $radius-sm;
+        border-left: fn.rem(3) solid transparent;
+
+        &--log {
+            background-color: rgba($white, 0.05);
+            border-left-color: $gray-500;
+            color: $white;
+        }
+
+        &--error {
+            background-color: rgba($error, 0.1);
+            border-left-color: $error;
+            color: #ff6b6b;
+        }
+
+        &--warn {
+            background-color: rgba($yellow-primary, 0.1);
+            border-left-color: $yellow-primary;
+            color: $yellow-primary;
+        }
+
+        &--info {
+            background-color: rgba($info, 0.1);
+            border-left-color: $info;
+            color: $info-light;
+        }
+    }
+
+    &__log-type {
+        flex-shrink: 0;
+        font-size: fn.rem(14);
+    }
+
+    &__log-message {
+        flex: 1;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+}
